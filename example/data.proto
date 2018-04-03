@@ -1,0 +1,16 @@
+syntax = "proto3";
+package example;
+service FormatData {
+  rpc DoFormat(ShelfInfo) returns (CMDInfo){}
+}
+message CMDInfo {
+  int32 cmd_type = 1;
+}
+
+message ShelfInfo {
+  int32 door_status = 1;
+  int32 light_status = 2;
+  int32 camera_status = 3;
+  int32 shelf_id = 4;
+  bytes image = 5;
+}
