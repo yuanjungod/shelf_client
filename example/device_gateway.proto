@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package device.proto.gateway;
+
+option go_package = "guoxiaomei.com/device/proto/gateway";
+
+// AuthenticationRequest 代表设备向设备网关的认证请求.
+message AuthenticationRequest {
+  // 设备的唯一标识.
+  string device_id = 1;
+
+  // 设备当前拥有的凭据.
+  //
+  // 有效凭据:
+  //   1. 已生效但未失效的 Token.
+  //   2. 已颁发但未生效的 Token.
+  string token = 2;
+}
+
+// AuthenticationResponse 代表设备向设备网关认证请求的响应.
+message AuthenticationResponse {
+  // 设备网关向设备颁发的访问凭证.
+  //
+  // 新颁发的凭证需要先在本地持久化后再使用.
+  string token = 1;
+
+  // 货柜编号
+  string SerialNumber = 2;
+}
+
+// AuthorizationRequest 代表设备请求更新对外临时授权凭据的请求.
+message AuthorizationRequest {
+  // 标识设备身份的凭证.
+  string token = 1;
+}
+
+// AuthorizationResponse 代表设备请求更新对外临时授权凭据请求的响应.
+message AuthorizationResponse {
+  // 设备对外临时授权凭据.
+  string code = 1;
+
+  // 设备对外临时授权二维码.
+  //
+  // 通过授权二维码也可由对应服务端解析出授权凭据.
+  string qr_code = 2;
+
+  // 授权凭据有效时间.
+  //
+  // 代表临时授权凭据在多少秒内有效.
+  int32 expires_in = 3;
+}
+
+// CommandRequest 代表设备网关向设备发送设备需要执行的命令
+message CommandRequest {
+  // 命令id
+  string id = 1;
+  string reply_id = 2;
+  // 命令时间戳
+  string time = 3;
+
+  string UserName = 4;
+  string UserPortrait = 5;
+  repeated int32 GoodList = 6;
+
+  oneof args {
+      int32 OpendDoor = 7;
+      int32 CloseDoor = 8;
+      int32 CheckShelf = 9;
+  }
+}
+
+// CommandResponse 代表设备返回网关,设备执行命令的响应
+message CommandResponse {
+  string id = 1;
+  string time = 2;
+  int32 door_status = 3;
+  int32 light_status = 4;
+  int32 camera_status = 5;
+  int32 shelf_id = 6;
+  string image_url = 7;
+  int32 success = 8;
+}
+
+// DeviceGateway 定义设备网关交互协议.
+service DeviceGateway {
+
+  // Authentication 用于设备向服务进行认证.
+  //
+  // Token 的生效: 
+  //   1. 网关向设备颁发 Token 后,设备使用新 Token 访问网关后生效.
+  //
+  // Token 的失效:
+  //   1. 新 Token 生效后,生产新 Token 的旧 Token 失效.
+  //   2. 设备通过身份认定后,校验之外的 Token 失效. 
+  rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse);
+
+  // Authorization 用于更新设备对外授权凭据.
+  //
+  // 设备对外授权的临时凭据，特性如下:
+  //   1. 有效期较短.
+  //   2. 授权后立即失效.
+  rpc Authorization(AuthorizationRequest) returns (AuthorizationResponse);
+
+  rpc Command(stream CommandResponse) returns (stream CommandRequest);
+
+  // TODO(黑旋风): TBD
+}

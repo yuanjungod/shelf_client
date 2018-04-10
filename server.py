@@ -3,36 +3,35 @@
 import grpc
 import time
 from concurrent import futures
-from example import data_pb2, data_pb2_grpc
-import cv2
-import json
-import numpy as np
+from example import device_gateway_pb2, device_gateway_pb2_grpc
 
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
-_HOST = '192.168.2.30'
-_PORT = '9999'
-
-count = 1
+_HOST = 'localhost'
+_PORT = '50051'
 
 
-class FormatData(data_pb2_grpc.FormatDataServicer):
-    def DoFormat(self, request, context):
-        global count
-        # print(request.image.decode('iso-8859-1'))
-        # print(type(request.image.encode()))
-        # img = cv2.imdecode(np.array(json.loads(request.image.encode())), cv2.IMREAD_COLOR)
-        # if count > 20 and count % 5 == 0:
-        #     print(img)
-        #     cv2.imwrite("%s.jpg" % count, img)
-        count += 1
+class ShelfService(device_gateway_pb2_grpc.DeviceGatewayServicer):
 
-        return data_pb2.CMDInfo(cmd_type=1)
+    def Command(self, request, context):
+        while True:
+            time.sleep(1)
+            yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
+
+    def Report(self, request, context):
+        print "###############", request
+        return device_gateway_pb2.CommandRequest(id="1", ChechMesage=1)
+
+    def Authentication(self, request, context):
+        return device_gateway_pb2.AuthenticationResponse(token="fuckfuckfuckyourass", SerialNumber="121334325234234")
+
+    def Authorization(self, request, context):
+        return device_gateway_pb2.AuthorizationResponse(code="1111", qr_code="wwww", expires_in = 10)
 
 
 def serve():
     grpcServer = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
-    data_pb2_grpc.add_FormatDataServicer_to_server(FormatData(), grpcServer)
+    device_gateway_pb2_grpc.add_DeviceGatewayServicer_to_server(ShelfService(), grpcServer)
     grpcServer.add_insecure_port(_HOST + ':' + _PORT)
     grpcServer.start()
     try:
