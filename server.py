@@ -13,16 +13,32 @@ _PORT = '50051'
 
 class ShelfService(device_gateway_pb2_grpc.DeviceGatewayServicer):
 
-    def Command(self, request, context):
-        while True:
-            time.sleep(1)
-            yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
+    def Command(self, request_iterator, context):
+
+        count = 1
+        for request in request_iterator:
+            print request.ReplyId == "", request.id
+            if request.id != "":
+                yield device_gateway_pb2.CommandRequest(ReplyId=request.id, OpendDoor=1)
+
+            if count % 5 == 0:
+                yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
+            count += 1
+        # for request in request_iterator:
+        #     print request
+        #     # time.sleep(1)
+        #     yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
+        # while True:
+        #     time.sleep(10)
+        #     print(type(request_iterator))
+        #     yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
 
     def Report(self, request, context):
         print "###############", request
         return device_gateway_pb2.CommandRequest(id="1", ChechMesage=1)
 
     def Authentication(self, request, context):
+        print("Authentication")
         return device_gateway_pb2.AuthenticationResponse(token="fuckfuckfuckyourass", SerialNumber="121334325234234")
 
     def Authorization(self, request, context):

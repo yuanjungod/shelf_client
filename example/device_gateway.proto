@@ -54,7 +54,7 @@ message AuthorizationResponse {
 message CommandRequest {
   // 命令id
   string id = 1;
-  string reply_id = 2;
+  string ReplyId = 2;
   // 命令时间戳
   string time = 3;
 
@@ -72,13 +72,14 @@ message CommandRequest {
 // CommandResponse 代表设备返回网关,设备执行命令的响应
 message CommandResponse {
   string id = 1;
-  string time = 2;
-  int32 door_status = 3;
-  int32 light_status = 4;
-  int32 camera_status = 5;
-  int32 shelf_id = 6;
-  string image_url = 7;
-  int32 success = 8;
+  string ReplyId = 2;
+  string time = 3;
+  int32 door_status = 4;
+  int32 light_status = 5;
+  int32 camera_status = 6;
+  int32 shelf_id = 7;
+  string image_url = 8;
+  int32 success = 9;
 }
 
 // DeviceGateway 定义设备网关交互协议.

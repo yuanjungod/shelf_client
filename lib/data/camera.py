@@ -58,8 +58,8 @@ class Camera(object):
                 for frame in self.take_photos():
                     time.sleep(1)
                     print(frame.shape)
-                self._return_cmd_queue.put(device_gateway_pb2.CommandResponse(id="1", success=1, door_status=1))
-            self._return_cmd_queue.put(device_gateway_pb2.CommandResponse(id="1", success=1, door_status=2))
+                self._return_cmd_queue.put(device_gateway_pb2.CommandResponse(id=str(time.time()), success=1, door_status=1))
+            self._return_cmd_queue.put(device_gateway_pb2.CommandResponse(id=str(time.time()), success=1, door_status=2))
 
     def push_frames_to_server(self, cmd):
         self._image_task_queue.put(cmd)

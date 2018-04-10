@@ -33,12 +33,12 @@ class Shelf(object):
     def execute_server_command(self, cmd):
         if not self.check_device():
             print "#############################fuck#############################", self.is_init, self.in_use
-            return device_gateway_pb2.CommandResponse(id=cmd.id, time=cmd.time, shelf_id=502, success=2)
+            return device_gateway_pb2.CommandResponse(ReplyId=cmd.id, time=cmd.time, shelf_id=502, success=2)
         else:
             self.in_use = True
             print("in use")
             self._camera.push_frames_to_server(cmd)
-            return device_gateway_pb2.CommandResponse(id=cmd.id, time=cmd.time, shelf_id=502, success=1)
+            return device_gateway_pb2.CommandResponse(ReplyId=cmd.id, time=cmd.time, shelf_id=502, success=1)
 
 
 
