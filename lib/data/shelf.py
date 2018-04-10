@@ -1,7 +1,7 @@
 from camera import Camera
 from door import Door
 from light import Light
-from example import device_gateway_pb2
+from gateway_proto import device_gateway_pb2
 import os
 
 

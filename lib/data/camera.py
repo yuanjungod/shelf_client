@@ -3,7 +3,7 @@ import threading
 import Queue
 import sqlite3
 from lib.tools.video_tool import VideoTool
-from example import device_gateway_pb2
+from gateway_proto import device_gateway_pb2
 
 
 class Camera(object):

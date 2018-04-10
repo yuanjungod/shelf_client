@@ -7,7 +7,7 @@ import os
 import json
 import uuid
 import time
-from example import device_gateway_pb2, device_gateway_pb2_grpc
+from gateway_proto import device_gateway_pb2, device_gateway_pb2_grpc
 from lib.data.shelf import Shelf
 from lib.tools.message_manage import MessageManage
 
@@ -27,7 +27,9 @@ class Client(object):
             self._channel, self._shelf, self._queue)
         self._shelf.init()
 
-    def init(self, stub):
+    def init(self, stub=None):
+        if stub is None:
+            stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
         if not os.path.exists("config.json"):
             print("1")
             self._config = dict()
@@ -54,48 +56,19 @@ class Client(object):
                 with open("config.json", "w") as f:
                     json.dump(self._config, f)
 
-    def process_server_command(self):
-        stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
-
-        self.init(stub)
-        print "process_server_command"
-        # requests = stub.Command(device_gateway_pb2.CommandResponse(id="0"))
-        # requests = stub.Command()
-
-        # for request in requests:
-        #     self._shelf.get_device_status()
-
-            # self._message_manage.add_request_queue(request)
-
-            # stub.Command(self._shelf.execute_server_command(feature))
-            # self.init(stub)
-
-    def process_slow_event_report(self):
-        stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
-
-        print "report_local_message"
-        while True:
-            shelf_info = self._queue.get()
-            print "process_event"
-            self._shelf.get_device_status()
-
-            stub.Command(shelf_info)
-            if shelf_info.door_status == 2:
-                self._shelf.in_use = False
-
     def timed_task(self):
         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
         while True:
-            time.sleep(5)
-            if not self._shelf.get_device_status():
-                pass
+            time.sleep(100)
+            self.init(stub)
 
     def run(self):
-        # slow_event_report = threading.Thread(target=self.process_slow_event_report)
-        # slow_event_report.start()
-        # timed_task = threading.Thread(target=self.timed_task)
-        # timed_task.start()
-        self.process_server_command()
+
+        self.init()
+
+        timed_task = threading.Thread(target=self.timed_task)
+        timed_task.start()
+
         self._message_manage.run()
 
 

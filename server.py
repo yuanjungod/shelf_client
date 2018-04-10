@@ -3,7 +3,7 @@
 import grpc
 import time
 from concurrent import futures
-from example import device_gateway_pb2, device_gateway_pb2_grpc
+from gateway_proto import device_gateway_pb2, device_gateway_pb2_grpc
 
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24

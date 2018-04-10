@@ -2,7 +2,7 @@
 import Queue
 import time
 import threading
-from example import device_gateway_pb2, device_gateway_pb2_grpc
+from gateway_proto import device_gateway_pb2, device_gateway_pb2_grpc
 
 
 class MessageManage(object):
@@ -54,8 +54,6 @@ class MessageManage(object):
     def process_response(self):
         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
 
-        # while True:
-        # while True:
         response_iterator = self.create_response_iterator()
         for request in stub.Command(response_iterator):
             self.add_request_queue(request)

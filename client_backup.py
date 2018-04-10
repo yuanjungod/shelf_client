@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import grpc
-from example import data_pb2, data_pb2_grpc
+from gateway_proto import data_pb2, data_pb2_grpc
 from lib.tools.video_tool import VideoTool
 import time
 import sqlite3
