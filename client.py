@@ -9,7 +9,7 @@ import uuid
 import time
 from gateway_proto import device_gateway_pb2, device_gateway_pb2_grpc
 from lib.data.shelf import Shelf
-from lib.tools.message_manage import MessageManage
+from lib.tools.message_controller import MessageController
 
 
 class Client(object):
@@ -19,17 +19,17 @@ class Client(object):
         self._host = host
         self._port = port
         self._config = None
-        self._channel = grpc.insecure_channel('%s:%s' % (self._host, self._port))
+        self._grpc_channel = grpc.insecure_channel('%s:%s' % (self._host, self._port))
 
         self._queue = Queue.Queue()
         self._shelf = Shelf(self._queue)
-        self._message_manage = MessageManage(
-            self._channel, self._shelf, self._queue)
+        self._message_manage = MessageController(
+            self._grpc_channel, self._shelf, self._queue)
         self._shelf.init()
 
     def init(self, stub=None):
         if stub is None:
-            stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
+            stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._grpc_channel)
         if not os.path.exists("config.json"):
             print("1")
             self._config = dict()
@@ -55,9 +55,10 @@ class Client(object):
                 self._config["expires_in"] = time.time() + authorization.expires_in
                 with open("config.json", "w") as f:
                     json.dump(self._config, f)
+        self._shelf.set_shelf_id(self._config["uuid"])
 
     def timed_task(self):
-        stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
+        stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._grpc_channel)
         while True:
             time.sleep(100)
             self.init(stub)

@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import grpc
 import time
@@ -24,14 +23,6 @@ class ShelfService(device_gateway_pb2_grpc.DeviceGatewayServicer):
             if count % 5 == 0:
                 yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
             count += 1
-        # for request in request_iterator:
-        #     print request
-        #     # time.sleep(1)
-        #     yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
-        # while True:
-        #     time.sleep(10)
-        #     print(type(request_iterator))
-        #     yield device_gateway_pb2.CommandRequest(id="2", OpendDoor=1)
 
     def Report(self, request, context):
         print "###############", request

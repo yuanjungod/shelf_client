@@ -61,11 +61,12 @@ message CommandRequest {
   string UserName = 4;
   string UserPortrait = 5;
   repeated int32 GoodList = 6;
+  repeated string ImageUrlList = 7;
 
   oneof args {
-      int32 OpendDoor = 7;
-      int32 CloseDoor = 8;
-      int32 CheckShelf = 9;
+      int32 OpendDoor = 8;
+      int32 CloseDoor = 9;
+      int32 CheckShelf = 10;
   }
 }
 
@@ -78,7 +79,7 @@ message CommandResponse {
   int32 light_status = 5;
   int32 camera_status = 6;
   int32 shelf_id = 7;
-  string image_url = 8;
+  int32 request_url = 8;
   int32 success = 9;
 }
 
