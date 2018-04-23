@@ -1,0 +1,428 @@
+syntax = "proto3";
+
+package device.proto.gateway;
+
+option go_package = "guoxiaomei.com/device/proto/gateway";
+
+import "google/protobuf/any.proto"; 
+
+// AuthenticationRequest 代表设备向设备网关的认证请求.
+message AuthenticationRequest {
+}
+
+// AuthenticationReply 代表设备向设备网关认证请求的响应.
+message AuthenticationReply {
+  // 设备认证 key.
+  //
+  // 设备与设备网关通信凭证的 Key.
+  string device_key = 1;
+
+  // 设备认证密钥.
+  //
+  // 密钥需要先在本地存储后再使用.
+  //
+  // 设备与设备网关通信凭证的 Secret.
+  string device_secret = 2;
+
+  // 设备授权令牌.
+  //
+  // 当设备正在被使用时, 此值不为空.
+  //
+  // 用于外置设备以用户视角同应用网关通信.
+  // 例如:
+  //   1. 显示屏展示当前用户的购买情况.
+  string device_token = 3;
+}
+
+// AuthorizationRequest 代表设备请求更新对外临时授权凭据的请求.
+message AuthorizationRequest {
+}
+
+// AuthorizationReply 代表设备请求更新对外临时授权凭据请求的响应.
+message AuthorizationReply {
+  // 设备对外临时授权凭据.
+  string code = 1;
+
+  // 设备对外临时授权二维码.
+  //
+  // 通过授权二维码也可由对应服务端解析出授权凭据.
+  string qr_code = 2;
+
+  // 授权凭据有效时间.
+  //
+  // 代表临时授权凭据在多少秒内有效.
+  int32 expires_in = 3;
+
+  // 绑定货架 ID.
+  string shelf_id = 4;
+
+  // 绑定货架编码.
+  string shelf_code = 5;
+  
+  // 绑定货架名称.
+  string shelf_name = 6;
+
+  // 服务电话.
+  string service_phone = 7;
+}
+
+// StreamMessage 代表设备设备与设备网关之间的信息载体.
+message StreamMessage {
+  // 消息 ID.
+  //
+  // 消息 ID 用于幂等处理.
+  string id = 1;
+
+  // 消息回复 ID.
+  //
+  // 消息为回复消息时, 携带被回复消息的 ID.
+  string reply_to = 2;
+
+  // 消息体.
+  //
+  // 所有的消息体都是定义在 device/proto/messages 中的 message.
+  .google.protobuf.Any payload = 3;
+}
+
+// AliyunFederationTokenRequest 代表设备请求获取向阿里云 OSS 上传图片的临时账号.
+message AliyunFederationTokenRequest {
+}
+
+// AliyunFederationTokenReply 代表设备网关给设备响应的 OSS 上传图片临时账号.
+message AliyunFederationTokenReply {
+  // 访问阿里云 OSS 的 access_key_id.
+  string access_key_id = 1;
+
+  // 访问阿里云 OSS 的数据签名 secret.
+  string access_key_secret = 2;
+
+  // 访问阿里云 OSS 的 token.
+  string security_token = 3;
+
+  // 临时账号的有效时间.
+  //
+  // 代表临时账号在多少秒内有效.
+  int32 expires_in = 4;
+
+  // 数据上传阿里云 OSS 的端点.
+  string oss_endpoint = 5;
+
+  // 数据存储到阿里云的 region.
+  string oss_region = 6;
+
+  // 数据存储到阿里云的 bucket.
+  string oss_bucket = 7;
+
+  // 数据存储到阿里云的路径.
+  //
+  // 路径是设备与日期相关的，此路径是不包含 bucket 的父路径.
+  //
+  // 举例：
+  //   oss_path: xxx-xxx/20180413
+  //   上传路径是: {oss_bucket}/{oss_path}/{batch-id}/{num}.(jpg|png)
+  string oss_path = 8;
+}
+
+// PowerState 代表设备电源状态.
+enum PowerState {
+  // 设备电源状态未知.
+  POWER_STATE_UNKNOWN = 0;
+
+  // 设备电源处于通电状态.
+  POWER_ON = 1;
+
+  // 设备电源处于断电状态.
+  POWER_OFF = 2;
+
+  // 设备电源处于故障状态.
+  POWER_FAILURE = 3;
+}
+
+// DoorState 代表设备门的状态.
+enum DoorState {
+  // 设备门的状态未知.
+  DOOR_STATE_UNKNOWN = 0;
+
+  // 设备门处于打开状态.
+  DOOR_OPENED = 1;
+
+  // 设备门处于关闭状态.
+  DOOR_CLOSED = 2;
+
+  // 设备门处于故障状态.
+  DOOR_FAILURE = 3;
+}
+
+// LockState 代表设备门锁的状态.
+enum LockState {
+  // 设备门锁的状态未知.
+  LOCK_STATE_UNKNOWN = 0;
+
+  // 设备门锁处于打开状态.
+  LOCK_OPENED = 1;
+
+  // 设备门锁处于关闭状态.
+  LOCK_CLOSED = 2;
+
+  // 设备门锁处于故障状态.
+  LOCK_FAILURE = 3;
+}
+
+// LightState 代表设备灯的状态.
+enum LightState {
+  // 设备门的状态未知.
+  LIGHT_STATE_UNKNOWN = 0;
+
+  // 设备门处于打开状态.
+  LIGHT_OPENED = 1;
+
+  // 设备门处于关闭状态.
+  LIGHT_CLOSED = 2;
+
+  // 设备门处于故障状态.
+  LIGHT_FAILURE = 3;
+}
+
+// SenseState 代表设备感知系统状态.
+enum SenseState {
+  // 设备感知系统状态未知.
+  SENSE_STATE_UNKNOWN = 0;
+
+  // 设备感知系统处于准备状态.
+  SENSE_READY = 1;
+
+  // 设备感知系统处于故障状态.
+  SENSE_FAILURE = 2;
+}
+
+// RegistrationState 代表设备注册状态.
+enum RegistrationState {
+  // 设备注册状态未知.
+  //
+  // 用于服务内部故障导致无法判断注册状态时.
+  REGISTRATION_STATE_UNKNOWN = 0;
+
+  // 设备未注册.
+  //
+  // 用于设备或业务系统都未向设备管理服务注册时.
+  UNREGISTERED = 1;
+
+  // 设备已经注册.
+  //
+  // 用于设备已通电上报设备信息但未绑定激活.
+  REGISTERED = 2;
+}
+
+// ActivationState 代表设备激活状态.
+enum ActivationState {
+  // 设备激活状态未知.
+  ACTIVATION_STATE_UNKNOWN = 0;
+
+  // 设备未激活.
+  NOT_ACTIVATED = 1;
+
+  // 设备已激活.
+  ACTIVATED = 2;
+}
+
+// OnlineState 代表设备在线状态.
+enum OnlineState {
+  // 设备在线状态未知.
+  //
+  // 用于服务内部故障导致无法判断在线状态时.
+  ONLINE_STATE_UNKNOWN = 0;
+
+  // 设备在线.
+  //
+  // 设备与接入层建立连接,且当前时间与最后一次心跳差值小于阈值视为在线.
+  ONLINE = 1;
+
+  // 设备离线.
+  //
+  // 设备主动离线或长时间未收到设备心跳包时视为离线.
+  OFFLINE = 2;
+}
+
+// SoftwareState 代表设备软件状态.
+enum SoftwareState {
+  // 设备软件状态未知.
+  SOFTWARE_STATE_UNKNOWN = 0;
+
+  // 设备软件系统正在启动.
+  //
+  // 此时设备可能在做硬件检测、商品识别. 还未达到对外提供服务的状态.
+  STARTING = 1;
+
+  // 设备软件系统正在运行.
+  RUNNING = 2;
+
+  // 设备软件系统正在退出.
+  EXITING = 3;
+
+  // 设备软件系统正在升级.
+  UPGRADING = 4;
+}
+
+// StockState 代表设备商品库存状态.
+enum StockState {
+  // 设备商品陈列状态未知.
+  STOCK_STATE_UNKNOWN = 0;
+
+  // 设备处于缺货状态.
+  STOCK_OUT = 1;
+
+  // 设备处于有货状态.
+  IN_STOCK = 2;
+
+  // 设备处于库存异常状态.
+  //
+  // 库存异常包括:
+  //    1. 异物覆盖导致无法计数.
+  //    2. 包含不可识别的商品.
+  //    3. ...
+  STOCK_ABNORMAL = 3;
+}
+
+// ServeState 代表设备对外服务行为模式.
+//
+// 设备的服务状态是设备对外提供服务的行为模式.
+enum ServeState {
+  // 设备服务状态未知.
+  SERVE_STATE_UNKNOWN = 0;
+
+  // 设备未初始化.
+  //
+  // 未初始化的设备，没有与配送系统做关联.
+  UNINITIALIZED = 1;
+
+  // 设备未启用.
+  //
+  // 设备已与配送系统关联，但未进行初始安装.
+  NOT_ENABLED = 2;
+
+  // 初装中.
+  //
+  // 安装人员正在初始安装.
+  INSTALLING = 3;
+
+  // 补货中.
+  //
+  // 配送人员正在补货.
+  REPLENISHING = 4;
+
+  // 待售状态.
+  //
+  // 此时符合条件的人可以扫描购买.
+  FOR_SALE = 5;
+
+  // 正在售卖状态.
+  //
+  // 有人正在购买.
+  SELLING = 6;
+
+  // 设备的服务状态被锁定.
+  LOCKED = 7;
+}
+
+
+
+// 下行 - 二维码被使用.
+message MessageCodeUsed {
+  string device_token = 1;
+}
+
+// 下行 - 刷新二维码消息.
+message MessageRefreshCode {
+}
+
+// 下行 - 解锁.
+message MessageUnlockDoor {
+}
+
+// Image 表示发送给物体识别服务的图片信息.
+message Image {
+// 图片信息只会以一种方式传递.
+oneof info {
+  // 代表图片直接以字节数组进行传递.
+  bytes content = 1;
+  // 代表图片以阿里云 OSS 进行传递,其值为对应的地址.
+  string aliyun_oss = 2;
+}
+}
+
+// 上行 - 传感器数据.
+message MessageSenseData {
+  // 收集数据时门的状态.
+  bool door_locked = 1;
+
+  repeated Image images = 2;
+}
+
+// 下行 - 识别结果.
+message MessageObjectDectected {
+}
+
+// 上行 - 门被打开.
+message MessageDoorOpened {
+
+}
+// 上行 - 门被关上.
+message MessageDoorClosed {
+
+}
+// 上行 - 门被锁上
+message MessageDoorLocked {
+
+}
+
+message MessageDeviceState {
+  // 设备电源状态.
+  PowerState power = 1;
+  // 设备备用电源状态.
+  PowerState standby = 2;
+  // 设备门状态.
+  DoorState door = 3;
+  // 设备门锁状态.
+  LockState lock = 4;
+  // 设备灯状态.
+  LightState light = 5;
+  // 设备感知系统状态.
+  SenseState sense = 6;
+}
+
+// DeviceGateway 定义设备网关交互协议.
+//
+// 所有的 RPC 请求都需要携带 device-id、device-key、device-secret 头作为认证信息.
+// device-key、device-secret 首次调用 Authentication 由设备网关下发.
+//
+// device-id 是设备的唯一标识，包含字母 "[a-z][A-Z][0-9]-".
+//
+// 设备调用网关接口失败后，重试请遵循指数退避原则。
+service DeviceGateway {
+
+  // Authentication 用于设备向网关进行认证.
+  //
+  // 设备向网关认证后，颁发新的认证 device-key、device-secret.
+  // 设备 device-secret 第一次向网关通信后生效.
+  //
+  // 设备认证锁定后, 与认证 device-key 不匹配的认证信息失效.
+  rpc Authentication(AuthenticationRequest) returns (AuthenticationReply);
+
+  // Authorization 用于更新设备对外授权码.
+  //
+  // 设备对外授权码特性如下:
+  //   1. 有效期较短.
+  //   2. 授权后立即失效.
+  //   3. Stream  重建后需刷新授权码.
+  //
+  // 当设备正在被使用时, 返回 grpc 错误码  codes.FailedPrecondition.
+  rpc Authorization(AuthorizationRequest) returns (AuthorizationReply);
+
+  // Stream 用于设备与设备网关之间的双向通信.
+  rpc Stream(stream StreamMessage) returns (stream StreamMessage);
+
+  // AliyunFederationToken 用户设备更新阿里云访问临时账号.
+  //
+  // 账号信息和设备绑定, 只能访问设备对应的目录.
+  rpc AliyunFederationToken(AliyunFederationTokenRequest) returns (AliyunFederationTokenReply);
+}

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import json
-import os
-
+from video_tool import VideoTool
 from PIL import Image
+import cv2
+import threading
+from gateway_proto import device_gateway_pb2
+import time
 
 import oss2
 
@@ -19,18 +21,19 @@ class Aliyun(object):
     #   http://oss-cn-hangzhou.aliyuncs.com
     #   https://oss-cn-hangzhou.aliyuncs.com
     # 分别以HTTP、HTTPS协议访问。
-    def __init__(self):
-        access_key_id = os.getenv('OSS_TEST_ACCESS_KEY_ID', '<你的AccessKeyId>')
-        access_key_secret = os.getenv('OSS_TEST_ACCESS_KEY_SECRET', '<你的AccessKeySecret>')
-        bucket_name = os.getenv('OSS_TEST_BUCKET', '<你的Bucket>')
-        endpoint = os.getenv('OSS_TEST_ENDPOINT', '<你的访问域名>')
+    def __init__(self, queue):
+        self.request_queue = queue
+        self.sts_auth = None
+        self.bucket_name = None
+        self.endpoint = None
+        self.account_info = None
 
-        # 确认上面的参数都填写正确了
-        for param in (access_key_id, access_key_secret, bucket_name, endpoint):
-            assert '<' not in param, '请设置参数：' + param
-
-        # 创建Bucket对象，所有Object相关的接口都可以通过Bucket对象来进行
-        self.bucket = oss2.Bucket(oss2.Auth(access_key_id, access_key_secret), endpoint, bucket_name)
+    def set_aliyun(self, account_info):
+        self.account_info = account_info
+        self.sts_auth = oss2.StsAuth(
+            self.account_info.access_key_id, self.account_info.access_key_secret, self.account_info.security_token)
+        self.bucket_name = self.account_info.bucket_name
+        self.endpoint = self.account_info.endpoint
 
     def get_image_info(image_file):
         """获取本地图片信息
@@ -40,8 +43,40 @@ class Aliyun(object):
         im = Image.open(image_file)
         return im.height, im.width, im.format
 
-    # def push_images_to_aliyun(self, remote_image_list):
-
     def push_image2aliyun(self, remote_file_name, local_file_name):
         # 上传示例图片
+
         return self.bucket.put_object_from_file(remote_file_name, local_file_name)
+
+    def push_image_2_aliyun(self, remote_file_name, image):
+        if (self.account_info is None) or (self.account_info is not None and self.account_info.expires_in + 10 < time.time()):
+            self.request_queue.put(device_gateway_pb2.AliyunFederationTokenRequest)
+            while self.account_info is None or self.account_info.expires_in + 10 < time.time():
+                time.sleep(0.5)
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+        result, encimg = cv2.imencode('.jpg', image, encode_param)
+        # print(dir(encimg))
+        self.bucket = oss2.Bucket(self.sts_auth, self.endpoint, self.bucket_name)
+        self.bucket.put_object(remote_file_name, encimg.tobytes())
+
+    def push_batch_image_2_aliyun(self, remote_file_name_list, image_list):
+        threads = list()
+        for i in range(len(remote_file_name_list)):
+            threads.append(threading.Thread(target=self.push_image_2_aliyun, args=(remote_file_name_list[i], image_list[i])))
+        for thread in threads:
+            thread.start()
+            thread.join()
+
+
+if __name__ == "__main__":
+    aliyun_tool = Aliyun("STS.LTLsqh2ZHvD8sUSDXWpjoDSS7", "3iovSbH1bbM18YNnsqxdbye1Zbgzz89ZvYp8ERj7iJgd",
+                         "object-detect-test", "xxxx-xxxx-xxxx-xxxx/3031be84750e96a30a549cfafc3e7bb6/20180413")
+    frames = VideoTool.convert_video_2_frame(0)
+    count = 1
+    for frame in frames:
+
+        print count, frame.shape
+        aliyun_tool.push_image_2_aliyun("%s.jpg" % count, frame)
+        count += 1
+    # aliyun_tool.bucket.get_object_to_file('1.jpg', '1.jpg')
+    # print aliyun_tool.push_image2aliyun("authentication.png", "/Users/quantum/Downloads/123.png")

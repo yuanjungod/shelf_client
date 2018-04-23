@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package device.proto.detection;
+
+option go_package = "guoxiaomei.com/device/proto/detection";
+
+// GoodsDetectRequest 代表设备网关发送到物体识别服务的商品识别请求.
+message GoodsDetectRequest {
+  // Image 表示发送给物体识别服务的图片信息.
+  message Image {
+    // 图片信息只会以一种方式传递.
+    oneof info {
+      // 代表图片直接以字节数组进行传递.
+      bytes content = 1;
+      // 代表图片以阿里云 OSS 进行传递,其值为对应的地址.
+      string aliyun_oss = 2;
+    }
+  }
+
+  repeated Image images = 1;
+}
+
+// GoodsDetectResponse 代表物体识别服务响应的商品识别响应.
+message GoodsDetectResponse {
+  // 对应每一张图片的识别结果.
+  message Detect {
+    // 图片中的商品数量.
+    //
+    // key 为商品 ID.
+    // value 为对应商品的数量.
+    map<string, int32> goods_nums = 1;
+  }
+
+  repeated Detect detects = 1;
+}
+
+// ObjectDetection 定义设备网关与物体识别服务的交互协议.
+service ObjectDetection {
+
+  // GoodsDetect 提供商品检测服务. 
+  //
+  // 该服务依据请求中的图片信息,调用识别服务并响应识别结果.
+  //
+  // 图片信息:
+  //  1. 阿里云 OSS 图片地址, 由服务自行下载到内存中进行识别.
+  //  2. 直接传递图片内容.
+  rpc GoodsDetect(GoodsDetectRequest) returns (GoodsDetectResponse);
+}

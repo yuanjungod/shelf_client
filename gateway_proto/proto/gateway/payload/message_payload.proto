@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package device.proto.gateway.payload;
+
+option go_package = "guoxiaomei.com/device/proto/gateway/payload";
+
+import "device/proto/state/device_state.proto";
+
+// DeviceStateReport 代表设备向设备网关报告的设备状态信息.
+message DeviceStateReport {
+  // 设备电源状态. 
+  .device.proto.state.PowerState power = 1;
+  // 设备备用电源状态.
+  .device.proto.state.PowerState standby = 2;
+  // 设备门状态.
+  .device.proto.state.DoorState door = 3;
+  // 设备门锁状态.
+  .device.proto.state.LockState lock = 4;
+  // 设备灯状态.
+  .device.proto.state.LightState light = 5;
+  // 设备感知系统状态.
+  .device.proto.state.SenseState sense = 6;
+}

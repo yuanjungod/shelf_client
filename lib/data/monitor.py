@@ -18,6 +18,8 @@ class Monitor(object):
         return True
 
     def show(self, message):
+        print message
+        return True
         if self.show_socket is None:
             self.init()
         try:

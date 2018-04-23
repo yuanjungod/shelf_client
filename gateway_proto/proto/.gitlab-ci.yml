@@ -1,0 +1,31 @@
+image: rg.guoxiaomei.cn:5000/op/cibuild:latest
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  - project=$(pwd)
+  - workspace=$(cd ../..; pwd)
+  - echo ${workspace}
+  - function cloneorpull() { cd ${workspace}; if [ -e  $2 ]; then rm -rf $2; fi; git clone $1 $2; }
+  - cloneorpull ssh://git@git.guoxiaomei.cn:2224/build_tools/workspace.git          build_tools/workspace
+  - cloneorpull ssh://git@git.guoxiaomei.cn:2224/build_tools/rules_guoxiaomei.git   build_tools/rules_guoxiaomei
+  - cd ${workspace}
+  - ln -f -s build_tools/workspace/WORKSPACE    WORKSPACE
+  - ln -f -s build_tools/workspace/BUILD.bazel  BUILD.bazel
+  - for f in $( find ./bazel-bin/device/proto/ -type f -iname *.deploy.snapshot.sh ); do rm -rf $f; done;
+  - for f in $( find ./bazel-bin/device/proto/ -type f -iname *.deploy.release.sh ); do rm -rf $f; done;
+  - cd ${project}
+
+stages:
+  - build
+
+proto_build:
+  stage: build
+  tags:
+    - builder
+  script:
+    - bazel build //device/proto/...
+    - ln -F -f -s ${workspace}/bazel-bin      bazel-bin
+    - ln -F -f -s ${workspace}/bazel-genfiles bazel-genfiles
+    - echo "发布 Snapshot jar 到 nexus 仓库"
+    - echo "$( find ./bazel-bin/device/proto/ -type f -iname *.deploy.snapshot.sh )"
+    - for f in $( find ./bazel-bin/device/proto/ -type f -iname *.deploy.snapshot.sh ); do $f; done

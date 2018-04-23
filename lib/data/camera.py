@@ -2,9 +2,10 @@ import time
 import threading
 import Queue
 import sqlite3
-import oss2
 from lib.tools.video_tool import VideoTool
+from lib.tools.aliyun import Aliyun
 from gateway_proto import device_gateway_pb2
+from google.protobuf import any_pb2
 
 
 class Camera(object):
@@ -57,16 +58,51 @@ class Camera(object):
 
     def internal_frame_thread(self):
         while True:
+            self.working = 0
             request = self._image_task_queue.get()
-            door_status = self._door.get_door_status()
-            while door_status.next():
+            self.working = 1
+            if request == "shelf_init":
+                frame_list = list()
                 for frame in self.take_photos():
-                    time.sleep(1)
+                    frame_list.append(frame)
                     print(frame.shape)
+                # Aliyun("", "", "", "", "").push_batch_image_2_aliyun([""], [frame_list])
+                any = any_pb2.Any()
+                any.Pack(device_gateway_pb2.MessageSenseData(
+                            door_locked=1, images=[device_gateway_pb2.Image(aliyun_oss="")]))
                 self._return_cmd_queue.put(
-                    device_gateway_pb2.CommandResponse(id=str(time.time()), success=1, door_status=1))
-            self._return_cmd_queue.put(
-                device_gateway_pb2.CommandResponse(id=str(time.time()), success=1, door_status=2))
+                    device_gateway_pb2.StreamMessage(
+                        id=str(time.time()),
+                        payload=any))
+
+            else:
+                door_status = self._door.get_door_status()
+                while door_status.next():
+                    frame_list = list()
+                    for frame in self.take_photos():
+                        frame_list.append(frame)
+                        print(frame.shape)
+                    # Aliyun("", "", "", "", "").push_batch_image_2_aliyun([""], [frame_list])
+                    any = any_pb2.Any()
+                    any.Pack(device_gateway_pb2.MessageSenseData(
+                        door_locked=0, images=[device_gateway_pb2.Image(aliyun_oss="")]))
+                    self._return_cmd_queue.put(
+                        device_gateway_pb2.StreamMessage(
+                            reply_to=request.id,
+                            payload=any))
+
+                frame_list = list()
+                for frame in self.take_photos():
+                    frame_list.append(frame)
+                    print(frame.shape)
+                # Aliyun("", "", "", "", "").push_batch_image_2_aliyun([""], [frame_list])
+                any = any_pb2.Any()
+                any.Pack(device_gateway_pb2.MessageSenseData(
+                    door_locked=1, images=[device_gateway_pb2.Image(aliyun_oss="")]))
+                self._return_cmd_queue.put(
+                    device_gateway_pb2.StreamMessage(
+                        reply_to=request.id,
+                        payload=any))
 
     def push_frames_to_server(self, request):
         self._image_task_queue.put(request)

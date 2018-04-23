@@ -3,6 +3,7 @@ import Queue
 import time
 import threading
 from gateway_proto import device_gateway_pb2_grpc
+from gateway_proto import device_gateway_pb2
 
 
 class MessageController(object):
@@ -17,31 +18,51 @@ class MessageController(object):
     def process_request(self):
         while True:
             request = self._request_queue.get()
-            if request.ReplyId != "":
-                if request.ReplyId in self._wait_for_confirm_msg:
-                    self._wait_for_confirm_msg.pop(request.ReplyId)
+            if hasattr(request, "reply_to") and request.reply_to != "":
+                if request.reply_to in self._wait_for_confirm_msg:
+                    self._wait_for_confirm_msg.pop(request.reply_to)
             else:
                 self._response_queue.put(self._shelf.process_request(request))
 
     def create_response_iterator(self):
         while True:
             try:
-                response = self._response_queue.get(timeout=1)
+                response = self._response_queue.get(timeout=0.5)
+                # print response
+
+                if not isinstance(response, device_gateway_pb2.StreamMessage):
+                    if isinstance(response, device_gateway_pb2.AuthorizationRequest):
+                        stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
+                        authorization_info = stub.Authorization(response)
+                        self._shelf.shelf_current_info = {
+                            "code": authorization_info.code, "qr_code": authorization_info.qr_code,
+                            "expires_in": authorization_info.expires_in, "shelf_id": authorization_info.shelf_id,
+                            "shelf_code": authorization_info.shelf_code,
+                            "shelf_name": authorization_info.shelf_name,
+                            "service_phone": authorization_info.service_phone}
+                        self._shelf.shelf_display([6, self._shelf.shelf_current_info])
+                        continue
+                    elif isinstance(response, device_gateway_pb2.AuthenticationRequest):
+                        pass
+                    elif response == "shelf_init":
+                        self._request_queue.put(response)
+                        continue
+                else:
+                    if response.payload.type_url.find("MessageSenseData") != -1:
+                        message_sense_data = device_gateway_pb2.MessageSenseData()
+                        response.payload.Unpack(message_sense_data)
+                        if message_sense_data.door_locked is True and self._shelf.camera.working == 0:
+                            self._shelf.in_use = False
+                        if message_sense_data.door_locked is False:
+                            continue
                 if response.id != "":
-                    self._wait_for_confirm_msg[response.id] = {
-                        "timestamp": time.time(),
-                        "response": response
-                    }
-                if response.door_status == 2:
-                    self._shelf.in_use = False
+                    self._wait_for_confirm_msg[response.id] = {"timestamp": time.time(), "response": response}
                 yield response
-                self._shelf.shelf_display(response)
             except:
                 pass
-                # print("beat heart")
-                # yield device_gateway_pb2.CommandResponse()
             print "wait_for_confirm_msg", len(self._wait_for_confirm_msg)
             for key, value in self._wait_for_confirm_msg.items():
+                print value["response"]
                 if time.time() - value["timestamp"] > 5:
                     self._wait_for_confirm_msg[key]["timestamp"] = time.time()
                     yield value["response"]
@@ -50,7 +71,8 @@ class MessageController(object):
         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
 
         response_iterator = self.create_response_iterator()
-        for request in stub.Command(response_iterator):
+        for request in stub.Stream(response_iterator):
+            # print request
             self._request_queue.put(request)
 
     def run(self):

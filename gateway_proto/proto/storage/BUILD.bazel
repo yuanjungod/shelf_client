@@ -1,0 +1,32 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+proto_library(
+    name = "storage_proto",
+    srcs = ["device_storage.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//device/proto/state:state_proto",
+        "@com_google_protobuf//:duration_proto",
+        "@com_google_protobuf//:timestamp_proto",
+    ],
+)
+
+go_proto_library(
+    name = "storage_go_proto",
+    importpath = "guoxiaomei.com/device/proto/storage",
+    proto = ":storage_proto",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//device/proto/state:go_default_library",
+        "@com_github_golang_protobuf//ptypes/duration:go_default_library",
+        "@com_github_golang_protobuf//ptypes/timestamp:go_default_library",
+    ],
+)
+
+go_library(
+    name = "go_default_library",
+    importpath = "guoxiaomei.com/device/proto/storage",
+    library = ":storage_go_proto",
+    visibility = ["//visibility:public"],
+)

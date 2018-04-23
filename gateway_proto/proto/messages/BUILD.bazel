@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+proto_library(
+    name = "messages_proto",
+    srcs = ["device_messages.proto"],
+    visibility = ["//visibility:public"],
+    deps = ["//device/proto/state:state_proto"],
+)
+
+go_proto_library(
+    name = "messages_go_proto",
+    importpath = "guoxiaomei.com/device/proto/messages",
+    proto = ":messages_proto",
+    visibility = ["//visibility:public"],
+    deps = ["//device/proto/state:go_default_library"],
+)
+
+go_library(
+    name = "go_default_library",
+    importpath = "guoxiaomei.com/device/proto/messages",
+    library = ":messages_go_proto",
+    visibility = ["//visibility:public"],
+)

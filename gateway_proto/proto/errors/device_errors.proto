@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package device.proto.errors;
+
+option go_package = "guoxiaomei.com/device/proto/errors";
+
+option java_multiple_files = true;
+option java_outer_classname = "ErrorsProto";
+option java_package = "com.guoxiaomei.device.proto.errors";
+
+///### Enum for all error codes.
+///### Localization Guide for error codes. Error code which requires Localization
+///### need to provide a //@Trans chinese comment on the above line.
+enum ErrorCode {
+	NONE = 0;
+
+	///### 5000 - 9999
+    //@Trans 设备不在线.
+    DEVICE_OFFLINE = 5000;
+    //@Trans 设备通信异常.
+    DEVICE_COMMUNICATION_FAIL = 5001;
+    //@Trans 设备使用中.
+    DEVICE_IS_IN_USE = 5002;
+
+	//@Trans 设备二维码无效.
+	DEVICE_INVALID_CODE = 5010;
+    //@Trans 设备访问令牌失效.
+    DEVICE_INVALID_ACCESSTOKEN = 5011;
+    //@Trans 设备已绑定店铺.
+    DEVICE_ALREADY_BIND_STORE = 5012;
+}
+
+// An error message including its error code and the parameters to render
+// a localized string.
+message ErrorMessage {
+	// The error code.
+	ErrorCode code = 1;
+
+	// The parameters used to render a localized string.
+	repeated string params = 2;
+}
+
+// The error wrapper message. All frontend messages should contain exactly
+// one field with this message as the first field. Example:
+//
+//     message GetMyResponse {
+//         errors.Error error = 1;
+//
+//         int32  current_page  = 2;
+//         int32  page_total    = 3;
+//         string continue_token = 4;
+//
+//         repeated MyMsg msg = 5;
+//     }
+message Error {
+	// The general error code.
+	ErrorCode code = 1;
+
+	// The general parameters with which to render a localized string.
+	repeated string params = 2;
+
+	// The debug information. Only populated in DEV, TEST, and QA environment.
+	// In PROD environment it will be stripped off before returning to the
+	// client.
+	string debug = 3;
+
+	// The detailed error messages.
+	repeated ErrorMessage details = 4;
+}
