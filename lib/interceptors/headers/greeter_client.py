@@ -25,8 +25,10 @@ import header_manipulator_client_interceptor
 def run():
     header_adder_interceptor = header_manipulator_client_interceptor.header_adder_interceptor(
         'one-time-password', '42')
+    header_validator1 = header_manipulator_client_interceptor.header_adder_interceptor(
+        'one-time-password', '43')
     channel = grpc.insecure_channel('localhost:50051')
-    channel = grpc.intercept_channel(channel, header_adder_interceptor)
+    channel = grpc.intercept_channel(channel, header_adder_interceptor, header_validator1)
     stub = helloworld_pb2_grpc.GreeterStub(channel)
     response = stub.SayHello(helloworld_pb2.HelloRequest(name='you'))
     print("Greeter client received: " + response.message)

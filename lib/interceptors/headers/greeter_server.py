@@ -35,9 +35,12 @@ def serve():
     header_validator = RequestHeaderValidatorInterceptor(
         'one-time-password', '42', grpc.StatusCode.UNAUTHENTICATED,
         'Access denied!')
+    header_validator1 = RequestHeaderValidatorInterceptor(
+        'one-time-password', '43', grpc.StatusCode.UNAUTHENTICATED,
+        'Access denied!')
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=10),
-        interceptors=(header_validator,))
+        interceptors=(header_validator, header_validator1))
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
     server.add_insecure_port('[::]:50051')
     server.start()

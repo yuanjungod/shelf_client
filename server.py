@@ -59,11 +59,10 @@ class ShelfService(device_gateway_pb2_grpc.DeviceGatewayServicer):
 
 def serve():
     header_validator = RequestHeaderValidatorInterceptor(
-        'a0e7dad4452811e8977172000870ecc0', '', grpc.StatusCode.UNAUTHENTICATED,
-        'Access denied!')
+        'one-time-password', '42', grpc.StatusCode.UNAUTHENTICATED, 'Access denied!')
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10),)
-        # interceptors=(header_validator,))
+        futures.ThreadPoolExecutor(max_workers=10),
+        interceptors=(header_validator,))
 
     # grpcServer = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
     device_gateway_pb2_grpc.add_DeviceGatewayServicer_to_server(ShelfService(), server)

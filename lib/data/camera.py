@@ -10,11 +10,12 @@ from google.protobuf import any_pb2
 
 class Camera(object):
 
-    def __init__(self, door, queue, light, camera_count=1):
+    def __init__(self, door, queue, light, aliyun, camera_count=1):
         self.working = 0
         self._light = light
         self._door = door
         self._camera_count = camera_count
+        self._aliyun = aliyun
         self._camera_instatnce_list = list()
         self._image_remote_save_url = list()
         for i in range(self._camera_count):
@@ -66,10 +67,16 @@ class Camera(object):
                 for frame in self.take_photos():
                     frame_list.append(frame)
                     print(frame.shape)
+                self._aliyun.check_account()
+                self._aliyun.push_batch_image_2_aliyun(["test/%s.jpg" % i for i in range(len(frame_list))], frame_list)
                 # Aliyun("", "", "", "", "").push_batch_image_2_aliyun([""], [frame_list])
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageSenseData(
-                            door_locked=1, images=[device_gateway_pb2.Image(aliyun_oss="")]))
+                            door_locked=1, images=[device_gateway_pb2.Image(
+                            aliyun_oss=",".join(["test/%s.jpg" % i for i in range(len(frame_list))]))]))
+                print device_gateway_pb2.StreamMessage(
+                        id=str(time.time()),
+                        payload=any)
                 self._return_cmd_queue.put(
                     device_gateway_pb2.StreamMessage(
                         id=str(time.time()),
@@ -85,7 +92,8 @@ class Camera(object):
                     # Aliyun("", "", "", "", "").push_batch_image_2_aliyun([""], [frame_list])
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
-                        door_locked=0, images=[device_gateway_pb2.Image(aliyun_oss="")]))
+                        door_locked=0, images=[device_gateway_pb2.Image(
+                            aliyun_oss=",".join(["test/%s.jpg" % i for i in range(len(frame_list))]))]))
                     self._return_cmd_queue.put(
                         device_gateway_pb2.StreamMessage(
                             reply_to=request.id,
@@ -96,9 +104,12 @@ class Camera(object):
                     frame_list.append(frame)
                     print(frame.shape)
                 # Aliyun("", "", "", "", "").push_batch_image_2_aliyun([""], [frame_list])
+                self._aliyun.check_account()
+                self._aliyun.push_batch_image_2_aliyun(["test/%s.jpg" % i for i in range(len(frame_list))], frame_list)
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageSenseData(
-                    door_locked=1, images=[device_gateway_pb2.Image(aliyun_oss="")]))
+                    door_locked=1, images=[device_gateway_pb2.Image(
+                        aliyun_oss=",".join(["test/%s.jpg" % i for i in range(len(frame_list))]))]))
                 self._return_cmd_queue.put(
                     device_gateway_pb2.StreamMessage(
                         reply_to=request.id,

@@ -18,9 +18,15 @@ class MessageController(object):
     def process_request(self):
         while True:
             request = self._request_queue.get()
+            print "*&*^&&*^%%$%$$", request
             if hasattr(request, "reply_to") and request.reply_to != "":
                 if request.reply_to in self._wait_for_confirm_msg:
                     self._wait_for_confirm_msg.pop(request.reply_to)
+            elif isinstance(request, device_gateway_pb2.AliyunFederationTokenRequest):
+                print "#################"
+                stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
+                ali_token = stub.AliyunFederationToken(request)
+                self._shelf.aliyun.set_aliyun(ali_token)
             else:
                 self._response_queue.put(self._shelf.process_request(request))
 
@@ -28,7 +34,7 @@ class MessageController(object):
         while True:
             try:
                 response = self._response_queue.get(timeout=0.5)
-                # print response
+                print response, isinstance(response, device_gateway_pb2.AliyunFederationTokenRequest)
 
                 if not isinstance(response, device_gateway_pb2.StreamMessage):
                     if isinstance(response, device_gateway_pb2.AuthorizationRequest):
@@ -44,11 +50,18 @@ class MessageController(object):
                         continue
                     elif isinstance(response, device_gateway_pb2.AuthenticationRequest):
                         pass
+                    elif isinstance(response, device_gateway_pb2.AliyunFederationTokenRequest):
+                        print "#################"
+                        stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
+                        ali_token = stub.AliyunFederationToken(response)
+                        self._shelf.aliyun.set_aliyun(ali_token)
+                        continue
                     elif response == "shelf_init":
                         self._request_queue.put(response)
                         continue
                 else:
                     if response.payload.type_url.find("MessageSenseData") != -1:
+                        yield response
                         message_sense_data = device_gateway_pb2.MessageSenseData()
                         response.payload.Unpack(message_sense_data)
                         if message_sense_data.door_locked is True and self._shelf.camera.working == 0:
@@ -60,9 +73,9 @@ class MessageController(object):
                 yield response
             except:
                 pass
-            print "wait_for_confirm_msg", len(self._wait_for_confirm_msg)
+            # print "wait_for_confirm_msg", len(self._wait_for_confirm_msg)
             for key, value in self._wait_for_confirm_msg.items():
-                print value["response"]
+                # print value["response"]
                 if time.time() - value["timestamp"] > 5:
                     self._wait_for_confirm_msg[key]["timestamp"] = time.time()
                     yield value["response"]

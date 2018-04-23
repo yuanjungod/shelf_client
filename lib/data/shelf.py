@@ -21,16 +21,18 @@ class Shelf(object):
         self.lock = None
         self._queue = queue
         self._shelf_id = None
+        self.aliyun = None
         self.shelf_current_info = dict()
 
     def init(self):
         self.door = Door()
         self.light = Light()
         self.lock = Lock()
-        self.camera = Camera(self.door, self._queue, self.light)
+
         self.monitor = Monitor("localhost", 9999)
         # self.monitor.init()
         self.aliyun = Aliyun(self._queue)
+        self.camera = Camera(self.door, self._queue, self.light, self.aliyun)
         self._queue.put("shelf_init")
         self.is_init = True
 
@@ -50,6 +52,7 @@ class Shelf(object):
             if self.in_use is False:
                 self.in_use = True
                 self.camera.push_frames_to_server(request)
+
         elif request.payload.type_url.find("MessageUnlockDoor") != -1:
             # print "self.check_device()", self.check_device()
             self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
