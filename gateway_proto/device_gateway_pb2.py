@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='proto/gateway/device_gateway.proto',
   package='device.proto.gateway',
   syntax='proto3',
-  serialized_pb=_b('\n\"proto/gateway/device_gateway.proto\x12\x14\x64\x65vice.proto.gateway\x1a\x19google/protobuf/any.proto\"\x17\n\x15\x41uthenticationRequest\"V\n\x13\x41uthenticationReply\x12\x12\n\ndevice_key\x18\x01 \x01(\t\x12\x15\n\rdevice_secret\x18\x02 \x01(\t\x12\x14\n\x0c\x64\x65vice_token\x18\x03 \x01(\t\"\x16\n\x14\x41uthorizationRequest\"\x98\x01\n\x12\x41uthorizationReply\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x0f\n\x07qr_code\x18\x02 \x01(\t\x12\x12\n\nexpires_in\x18\x03 \x01(\x05\x12\x10\n\x08shelf_id\x18\x04 \x01(\t\x12\x12\n\nshelf_code\x18\x05 \x01(\t\x12\x12\n\nshelf_name\x18\x06 \x01(\t\x12\x15\n\rservice_phone\x18\x07 \x01(\t\"T\n\rStreamMessage\x12\n\n\x02id\x18\x01 \x01(\t\x12\x10\n\x08reply_to\x18\x02 \x01(\t\x12%\n\x07payload\x18\x03 \x01(\x0b\x32\x14.google.protobuf.Any\"\x1e\n\x1c\x41liyunFederationTokenRequest\"\xca\x01\n\x1a\x41liyunFederationTokenReply\x12\x15\n\raccess_key_id\x18\x01 \x01(\t\x12\x19\n\x11\x61\x63\x63\x65ss_key_secret\x18\x02 \x01(\t\x12\x16\n\x0esecurity_token\x18\x03 \x01(\t\x12\x12\n\nexpires_in\x18\x04 \x01(\x05\x12\x14\n\x0coss_endpoint\x18\x05 \x01(\t\x12\x12\n\noss_region\x18\x06 \x01(\t\x12\x12\n\noss_bucket\x18\x07 \x01(\t\x12\x10\n\x08oss_path\x18\x08 \x01(\t\"\'\n\x0fMessageCodeUsed\x12\x14\n\x0c\x64\x65vice_token\x18\x01 \x01(\t\"\x14\n\x12MessageRefreshCode\"\x13\n\x11MessageUnlockDoor\"8\n\x05Image\x12\x11\n\x07\x63ontent\x18\x01 \x01(\x0cH\x00\x12\x14\n\naliyun_oss\x18\x02 \x01(\tH\x00\x42\x06\n\x04info\"T\n\x10MessageSenseData\x12\x13\n\x0b\x64oor_locked\x18\x01 \x01(\x08\x12+\n\x06images\x18\x02 \x03(\x0b\x32\x1b.device.proto.gateway.Image\"\x18\n\x16MessageObjectDectected\"\x13\n\x11MessageDoorOpened\"\x13\n\x11MessageDoorClosed\"\x13\n\x11MessageDoorLocked\"\xb8\x02\n\x12MessageDeviceState\x12/\n\x05power\x18\x01 \x01(\x0e\x32 .device.proto.gateway.PowerState\x12\x31\n\x07standby\x18\x02 \x01(\x0e\x32 .device.proto.gateway.PowerState\x12-\n\x04\x64oor\x18\x03 \x01(\x0e\x32\x1f.device.proto.gateway.DoorState\x12-\n\x04lock\x18\x04 \x01(\x0e\x32\x1f.device.proto.gateway.LockState\x12/\n\x05light\x18\x05 \x01(\x0e\x32 .device.proto.gateway.LightState\x12/\n\x05sense\x18\x06 \x01(\x0e\x32 .device.proto.gateway.SenseState*U\n\nPowerState\x12\x17\n\x13POWER_STATE_UNKNOWN\x10\x00\x12\x0c\n\x08POWER_ON\x10\x01\x12\r\n\tPOWER_OFF\x10\x02\x12\x11\n\rPOWER_FAILURE\x10\x03*W\n\tDoorState\x12\x16\n\x12\x44OOR_STATE_UNKNOWN\x10\x00\x12\x0f\n\x0b\x44OOR_OPENED\x10\x01\x12\x0f\n\x0b\x44OOR_CLOSED\x10\x02\x12\x10\n\x0c\x44OOR_FAILURE\x10\x03*W\n\tLockState\x12\x16\n\x12LOCK_STATE_UNKNOWN\x10\x00\x12\x0f\n\x0bLOCK_OPENED\x10\x01\x12\x0f\n\x0bLOCK_CLOSED\x10\x02\x12\x10\n\x0cLOCK_FAILURE\x10\x03*\\\n\nLightState\x12\x17\n\x13LIGHT_STATE_UNKNOWN\x10\x00\x12\x10\n\x0cLIGHT_OPENED\x10\x01\x12\x10\n\x0cLIGHT_CLOSED\x10\x02\x12\x11\n\rLIGHT_FAILURE\x10\x03*I\n\nSenseState\x12\x17\n\x13SENSE_STATE_UNKNOWN\x10\x00\x12\x0f\n\x0bSENSE_READY\x10\x01\x12\x11\n\rSENSE_FAILURE\x10\x02*U\n\x11RegistrationState\x12\x1e\n\x1aREGISTRATION_STATE_UNKNOWN\x10\x00\x12\x10\n\x0cUNREGISTERED\x10\x01\x12\x0e\n\nREGISTERED\x10\x02*Q\n\x0f\x41\x63tivationState\x12\x1c\n\x18\x41\x43TIVATION_STATE_UNKNOWN\x10\x00\x12\x11\n\rNOT_ACTIVATED\x10\x01\x12\r\n\tACTIVATED\x10\x02*@\n\x0bOnlineState\x12\x18\n\x14ONLINE_STATE_UNKNOWN\x10\x00\x12\n\n\x06ONLINE\x10\x01\x12\x0b\n\x07OFFLINE\x10\x02*b\n\rSoftwareState\x12\x1a\n\x16SOFTWARE_STATE_UNKNOWN\x10\x00\x12\x0c\n\x08STARTING\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\x12\x0b\n\x07\x45XITING\x10\x03\x12\r\n\tUPGRADING\x10\x04*V\n\nStockState\x12\x17\n\x13STOCK_STATE_UNKNOWN\x10\x00\x12\r\n\tSTOCK_OUT\x10\x01\x12\x0c\n\x08IN_STOCK\x10\x02\x12\x12\n\x0eSTOCK_ABNORMAL\x10\x03*\x92\x01\n\nServeState\x12\x17\n\x13SERVE_STATE_UNKNOWN\x10\x00\x12\x11\n\rUNINITIALIZED\x10\x01\x12\x0f\n\x0bNOT_ENABLED\x10\x02\x12\x0e\n\nINSTALLING\x10\x03\x12\x10\n\x0cREPLENISHING\x10\x04\x12\x0c\n\x08\x46OR_SALE\x10\x05\x12\x0b\n\x07SELLING\x10\x06\x12\n\n\x06LOCKED\x10\x07\x32\xb7\x03\n\rDeviceGateway\x12h\n\x0e\x41uthentication\x12+.device.proto.gateway.AuthenticationRequest\x1a).device.proto.gateway.AuthenticationReply\x12\x65\n\rAuthorization\x12*.device.proto.gateway.AuthorizationRequest\x1a(.device.proto.gateway.AuthorizationReply\x12V\n\x06Stream\x12#.device.proto.gateway.StreamMessage\x1a#.device.proto.gateway.StreamMessage(\x01\x30\x01\x12}\n\x15\x41liyunFederationToken\x12\x32.device.proto.gateway.AliyunFederationTokenRequest\x1a\x30.device.proto.gateway.AliyunFederationTokenReplyB%Z#guoxiaomei.com/device/proto/gatewayb\x06proto3')
+  serialized_pb=_b('\n\"proto/gateway/device_gateway.proto\x12\x14\x64\x65vice.proto.gateway\x1a\x19google/protobuf/any.proto\"\x17\n\x15\x41uthenticationRequest\"V\n\x13\x41uthenticationReply\x12\x12\n\ndevice_key\x18\x01 \x01(\t\x12\x15\n\rdevice_secret\x18\x02 \x01(\t\x12\x14\n\x0c\x64\x65vice_token\x18\x03 \x01(\t\"\x16\n\x14\x41uthorizationRequest\"\x98\x01\n\x12\x41uthorizationReply\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x0f\n\x07qr_code\x18\x02 \x01(\t\x12\x12\n\nexpires_in\x18\x03 \x01(\x05\x12\x10\n\x08shelf_id\x18\x04 \x01(\t\x12\x12\n\nshelf_code\x18\x05 \x01(\t\x12\x12\n\nshelf_name\x18\x06 \x01(\t\x12\x15\n\rservice_phone\x18\x07 \x01(\t\"T\n\rStreamMessage\x12\n\n\x02id\x18\x01 \x01(\t\x12\x10\n\x08reply_to\x18\x02 \x01(\t\x12%\n\x07payload\x18\x03 \x01(\x0b\x32\x14.google.protobuf.Any\"\x1e\n\x1c\x41liyunFederationTokenRequest\"\xca\x01\n\x1a\x41liyunFederationTokenReply\x12\x15\n\raccess_key_id\x18\x01 \x01(\t\x12\x19\n\x11\x61\x63\x63\x65ss_key_secret\x18\x02 \x01(\t\x12\x16\n\x0esecurity_token\x18\x03 \x01(\t\x12\x12\n\nexpires_in\x18\x04 \x01(\x05\x12\x14\n\x0coss_endpoint\x18\x05 \x01(\t\x12\x12\n\noss_region\x18\x06 \x01(\t\x12\x12\n\noss_bucket\x18\x07 \x01(\t\x12\x10\n\x08oss_path\x18\x08 \x01(\t\"\'\n\x0fMessageCodeUsed\x12\x14\n\x0c\x64\x65vice_token\x18\x01 \x01(\t\"\x14\n\x12MessageRefreshCode\"\x13\n\x11MessageUnlockDoor\"8\n\x05Image\x12\x11\n\x07\x63ontent\x18\x01 \x01(\x0cH\x00\x12\x14\n\naliyun_oss\x18\x02 \x01(\tH\x00\x42\x06\n\x04info\"j\n\x10MessageSenseData\x12\x14\n\x0c\x64\x65vice_token\x18\x01 \x01(\t\x12\x13\n\x0b\x64oor_locked\x18\x02 \x01(\x08\x12+\n\x06images\x18\x03 \x03(\x0b\x32\x1b.device.proto.gateway.Image\"\x18\n\x16MessageObjectDectected\"\x13\n\x11MessageDoorOpened\"\x13\n\x11MessageDoorClosed\"\x13\n\x11MessageDoorLocked\"\xb8\x02\n\x12MessageDeviceState\x12/\n\x05power\x18\x01 \x01(\x0e\x32 .device.proto.gateway.PowerState\x12\x31\n\x07standby\x18\x02 \x01(\x0e\x32 .device.proto.gateway.PowerState\x12-\n\x04\x64oor\x18\x03 \x01(\x0e\x32\x1f.device.proto.gateway.DoorState\x12-\n\x04lock\x18\x04 \x01(\x0e\x32\x1f.device.proto.gateway.LockState\x12/\n\x05light\x18\x05 \x01(\x0e\x32 .device.proto.gateway.LightState\x12/\n\x05sense\x18\x06 \x01(\x0e\x32 .device.proto.gateway.SenseState*U\n\nPowerState\x12\x17\n\x13POWER_STATE_UNKNOWN\x10\x00\x12\x0c\n\x08POWER_ON\x10\x01\x12\r\n\tPOWER_OFF\x10\x02\x12\x11\n\rPOWER_FAILURE\x10\x03*W\n\tDoorState\x12\x16\n\x12\x44OOR_STATE_UNKNOWN\x10\x00\x12\x0f\n\x0b\x44OOR_OPENED\x10\x01\x12\x0f\n\x0b\x44OOR_CLOSED\x10\x02\x12\x10\n\x0c\x44OOR_FAILURE\x10\x03*W\n\tLockState\x12\x16\n\x12LOCK_STATE_UNKNOWN\x10\x00\x12\x0f\n\x0bLOCK_OPENED\x10\x01\x12\x0f\n\x0bLOCK_CLOSED\x10\x02\x12\x10\n\x0cLOCK_FAILURE\x10\x03*\\\n\nLightState\x12\x17\n\x13LIGHT_STATE_UNKNOWN\x10\x00\x12\x10\n\x0cLIGHT_OPENED\x10\x01\x12\x10\n\x0cLIGHT_CLOSED\x10\x02\x12\x11\n\rLIGHT_FAILURE\x10\x03*I\n\nSenseState\x12\x17\n\x13SENSE_STATE_UNKNOWN\x10\x00\x12\x0f\n\x0bSENSE_READY\x10\x01\x12\x11\n\rSENSE_FAILURE\x10\x02*U\n\x11RegistrationState\x12\x1e\n\x1aREGISTRATION_STATE_UNKNOWN\x10\x00\x12\x10\n\x0cUNREGISTERED\x10\x01\x12\x0e\n\nREGISTERED\x10\x02*Q\n\x0f\x41\x63tivationState\x12\x1c\n\x18\x41\x43TIVATION_STATE_UNKNOWN\x10\x00\x12\x11\n\rNOT_ACTIVATED\x10\x01\x12\r\n\tACTIVATED\x10\x02*@\n\x0bOnlineState\x12\x18\n\x14ONLINE_STATE_UNKNOWN\x10\x00\x12\n\n\x06ONLINE\x10\x01\x12\x0b\n\x07OFFLINE\x10\x02*b\n\rSoftwareState\x12\x1a\n\x16SOFTWARE_STATE_UNKNOWN\x10\x00\x12\x0c\n\x08STARTING\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\x12\x0b\n\x07\x45XITING\x10\x03\x12\r\n\tUPGRADING\x10\x04*V\n\nStockState\x12\x17\n\x13STOCK_STATE_UNKNOWN\x10\x00\x12\r\n\tSTOCK_OUT\x10\x01\x12\x0c\n\x08IN_STOCK\x10\x02\x12\x12\n\x0eSTOCK_ABNORMAL\x10\x03*\x92\x01\n\nServeState\x12\x17\n\x13SERVE_STATE_UNKNOWN\x10\x00\x12\x11\n\rUNINITIALIZED\x10\x01\x12\x0f\n\x0bNOT_ENABLED\x10\x02\x12\x0e\n\nINSTALLING\x10\x03\x12\x10\n\x0cREPLENISHING\x10\x04\x12\x0c\n\x08\x46OR_SALE\x10\x05\x12\x0b\n\x07SELLING\x10\x06\x12\n\n\x06LOCKED\x10\x07\x32\xb7\x03\n\rDeviceGateway\x12h\n\x0e\x41uthentication\x12+.device.proto.gateway.AuthenticationRequest\x1a).device.proto.gateway.AuthenticationReply\x12\x65\n\rAuthorization\x12*.device.proto.gateway.AuthorizationRequest\x1a(.device.proto.gateway.AuthorizationReply\x12V\n\x06Stream\x12#.device.proto.gateway.StreamMessage\x1a#.device.proto.gateway.StreamMessage(\x01\x30\x01\x12}\n\x15\x41liyunFederationToken\x12\x32.device.proto.gateway.AliyunFederationTokenRequest\x1a\x30.device.proto.gateway.AliyunFederationTokenReplyB%Z#guoxiaomei.com/device/proto/gatewayb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_any__pb2.DESCRIPTOR,])
 
@@ -51,8 +51,8 @@ _POWERSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1334,
-  serialized_end=1419,
+  serialized_start=1356,
+  serialized_end=1441,
 )
 _sym_db.RegisterEnumDescriptor(_POWERSTATE)
 
@@ -82,8 +82,8 @@ _DOORSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1421,
-  serialized_end=1508,
+  serialized_start=1443,
+  serialized_end=1530,
 )
 _sym_db.RegisterEnumDescriptor(_DOORSTATE)
 
@@ -113,8 +113,8 @@ _LOCKSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1510,
-  serialized_end=1597,
+  serialized_start=1532,
+  serialized_end=1619,
 )
 _sym_db.RegisterEnumDescriptor(_LOCKSTATE)
 
@@ -144,8 +144,8 @@ _LIGHTSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1599,
-  serialized_end=1691,
+  serialized_start=1621,
+  serialized_end=1713,
 )
 _sym_db.RegisterEnumDescriptor(_LIGHTSTATE)
 
@@ -171,8 +171,8 @@ _SENSESTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1693,
-  serialized_end=1766,
+  serialized_start=1715,
+  serialized_end=1788,
 )
 _sym_db.RegisterEnumDescriptor(_SENSESTATE)
 
@@ -198,8 +198,8 @@ _REGISTRATIONSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1768,
-  serialized_end=1853,
+  serialized_start=1790,
+  serialized_end=1875,
 )
 _sym_db.RegisterEnumDescriptor(_REGISTRATIONSTATE)
 
@@ -225,8 +225,8 @@ _ACTIVATIONSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1855,
-  serialized_end=1936,
+  serialized_start=1877,
+  serialized_end=1958,
 )
 _sym_db.RegisterEnumDescriptor(_ACTIVATIONSTATE)
 
@@ -252,8 +252,8 @@ _ONLINESTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=1938,
-  serialized_end=2002,
+  serialized_start=1960,
+  serialized_end=2024,
 )
 _sym_db.RegisterEnumDescriptor(_ONLINESTATE)
 
@@ -287,8 +287,8 @@ _SOFTWARESTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2004,
-  serialized_end=2102,
+  serialized_start=2026,
+  serialized_end=2124,
 )
 _sym_db.RegisterEnumDescriptor(_SOFTWARESTATE)
 
@@ -318,8 +318,8 @@ _STOCKSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2104,
-  serialized_end=2190,
+  serialized_start=2126,
+  serialized_end=2212,
 )
 _sym_db.RegisterEnumDescriptor(_STOCKSTATE)
 
@@ -365,8 +365,8 @@ _SERVESTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2193,
-  serialized_end=2339,
+  serialized_start=2215,
+  serialized_end=2361,
 )
 _sym_db.RegisterEnumDescriptor(_SERVESTATE)
 
@@ -862,15 +862,22 @@ _MESSAGESENSEDATA = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='door_locked', full_name='device.proto.gateway.MessageSenseData.door_locked', index=0,
-      number=1, type=8, cpp_type=7, label=1,
+      name='device_token', full_name='device.proto.gateway.MessageSenseData.device_token', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='door_locked', full_name='device.proto.gateway.MessageSenseData.door_locked', index=1,
+      number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='images', full_name='device.proto.gateway.MessageSenseData.images', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      name='images', full_name='device.proto.gateway.MessageSenseData.images', index=2,
+      number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -888,7 +895,7 @@ _MESSAGESENSEDATA = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=844,
-  serialized_end=928,
+  serialized_end=950,
 )
 
 
@@ -911,8 +918,8 @@ _MESSAGEOBJECTDECTECTED = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=930,
-  serialized_end=954,
+  serialized_start=952,
+  serialized_end=976,
 )
 
 
@@ -935,8 +942,8 @@ _MESSAGEDOOROPENED = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=956,
-  serialized_end=975,
+  serialized_start=978,
+  serialized_end=997,
 )
 
 
@@ -959,8 +966,8 @@ _MESSAGEDOORCLOSED = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=977,
-  serialized_end=996,
+  serialized_start=999,
+  serialized_end=1018,
 )
 
 
@@ -983,8 +990,8 @@ _MESSAGEDOORLOCKED = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=998,
-  serialized_end=1017,
+  serialized_start=1020,
+  serialized_end=1039,
 )
 
 
@@ -1049,8 +1056,8 @@ _MESSAGEDEVICESTATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1020,
-  serialized_end=1332,
+  serialized_start=1042,
+  serialized_end=1354,
 )
 
 _STREAMMESSAGE.fields_by_name['payload'].message_type = google_dot_protobuf_dot_any__pb2._ANY
@@ -1226,8 +1233,8 @@ _DEVICEGATEWAY = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=2342,
-  serialized_end=2781,
+  serialized_start=2364,
+  serialized_end=2803,
   methods=[
   _descriptor.MethodDescriptor(
     name='Authentication',

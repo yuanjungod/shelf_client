@@ -352,10 +352,18 @@ oneof info {
 
 // 上行 - 传感器数据.
 message MessageSenseData {
-  // 收集数据时门的状态.
-  bool door_locked = 1;
+  // 采集数据时的设备令牌.
+  //
+  // 当令牌被吊销后采集数据时，此值为空.
+  string device_token = 1;
+  // 采集数据时门的状态.
+  //
+  // true: 采集时, 门是锁定状态.
+  // false: 采集时，门是解锁状态.
+  bool door_locked = 2;
+  // 采集的图片数据.
 
-  repeated Image images = 2;
+  repeated Image images = 3;
 }
 
 // 下行 - 识别结果.

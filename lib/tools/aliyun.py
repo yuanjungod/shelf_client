@@ -31,18 +31,16 @@ class Aliyun(object):
         self.bucket = None
 
     def set_aliyun(self, account_info):
-        print "set_aliyun", account_info
+        # print "set_aliyun", account_info
         self.account_info = account_info
         self.sts_auth = oss2.StsAuth(
             self.account_info.access_key_id, self.account_info.access_key_secret, self.account_info.security_token)
         self.oss_bucket = self.account_info.oss_bucket
         self.oss_endpoint = self.account_info.oss_endpoint
         self.account_local_time = time.time()
-        print "account_local_time", self.account_local_time
+        # print "account_local_time", self.account_local_time
 
     def push_image2aliyun(self, remote_file_name, local_file_name):
-        # 上传示例图片
-
         return self.bucket.put_object_from_file(remote_file_name, local_file_name)
 
     def check_account(self):
@@ -55,13 +53,14 @@ class Aliyun(object):
             while (self.account_info is None) or (self.account_local_time is None) or (
                     self.account_info is not None and self.account_local_time+self.account_info.expires_in + 10 < time.time()):
                 time.sleep(0.5)
-                print "account_local_time", self.account_local_time
+                # print "account_local_time", self.account_local_time
                 print "account_info", self.account_info
+        # print "account_info", self.account_info
 
     def push_image_2_aliyun(self, remote_file_name, image):
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
         result, encimg = cv2.imencode('.jpg', image, encode_param)
-        print image
+        # print image
         # print(dir(encimg))
         self.bucket = oss2.Bucket(self.sts_auth, self.oss_endpoint, self.oss_bucket)
         self.bucket.put_object(remote_file_name, encimg.tobytes())
@@ -75,16 +74,3 @@ class Aliyun(object):
             thread.start()
             thread.join()
 
-
-if __name__ == "__main__":
-    aliyun_tool = Aliyun("STS.LTLsqh2ZHvD8sUSDXWpjoDSS7", "3iovSbH1bbM18YNnsqxdbye1Zbgzz89ZvYp8ERj7iJgd",
-                         "object-detect-test", "xxxx-xxxx-xxxx-xxxx/3031be84750e96a30a549cfafc3e7bb6/20180413")
-    frames = VideoTool.convert_video_2_frame(0)
-    count = 1
-    for frame in frames:
-
-        print count, frame.shape
-        aliyun_tool.push_image_2_aliyun("%s.jpg" % count, frame)
-        count += 1
-    # aliyun_tool.bucket.get_object_to_file('1.jpg', '1.jpg')
-    # print aliyun_tool.push_image2aliyun("authentication.png", "/Users/quantum/Downloads/123.png")
