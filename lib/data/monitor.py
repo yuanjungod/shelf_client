@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import socket
 import json
+import logging
 
 
 class Monitor(object):
@@ -19,15 +20,11 @@ class Monitor(object):
 
     def show(self, message):
         print message
-        # return True
-        if self.show_socket is None:
-            self.init()
-        try:
-            self.show_socket.sendall(json.dumps(message))
-        except:
-            print(message)
-            self.show_socket.close()
-            self.show_socket = None
+        logging.info(message)
+        self.init()
+        self.show_socket.sendall(json.dumps(message))
+        self.show_socket.close()
+
 
 
 

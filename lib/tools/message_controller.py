@@ -1,4 +1,3 @@
-#  -*- coding:utf-8 -*- 
 import Queue
 import time
 import threading
@@ -17,7 +16,7 @@ class MessageController(object):
         self._response_queue = response_queue
         self.client_config = client_config
         self._wait_for_confirm_msg = dict()
-        # threading.Thread(target=self.simulation).start()
+        threading.Thread(target=self.simulation).start()
 
     def simulation(self):
         any = any_pb2.Any()
@@ -29,17 +28,20 @@ class MessageController(object):
         any.Pack(device_gateway_pb2.MessageUnlockDoor())
         unlock = device_gateway_pb2.StreamMessage(
             id=str(time.time()), payload=any)
-        event_list = [device_gateway_pb2.AuthorizationRequest(), code_used, unlock]
+        event_list = [device_gateway_pb2.AuthorizationRequest()]
         # while True:
         for event in event_list:
-            time.sleep(10)
+            time.sleep(5)
             logging.debug("$$$$$$$$$$$$event$$$$$$$$$$$$$$$$$$$: %s" % type(event))
             self._request_queue.put(event)
+        while True:
+            time.sleep(60)
+            self._request_queue.put(device_gateway_pb2.AuthorizationRequest())
 
     def process_request(self):
         while True:
             request = self._request_queue.get()
-            logging.debug("process_request: %s" % type(request))
+            # logging.debug("process_request: %s" % type(request))
             if hasattr(request, "reply_to") and request.reply_to != "":
                 if request.reply_to in self._wait_for_confirm_msg:
                     self._wait_for_confirm_msg.pop(request.reply_to)
@@ -53,7 +55,7 @@ class MessageController(object):
     def create_response_iterator(self):
         while True:
             try:
-                logging.debug("waiting for response_queue")
+                # logging.debug("waiting for response_queue")
                 if not self._shelf.camera.return_cmd_queue.empty():
                     self._response_queue.put(self._shelf.camera.return_cmd_queue.get())
                 response = self._response_queue.get(timeout=0.5)
@@ -127,5 +129,6 @@ class MessageController(object):
         process_request = threading.Thread(target=self.process_request)
         process_request.start()
         self.stream_start()
+        logging.error("*******************stream end ****************")
 
 

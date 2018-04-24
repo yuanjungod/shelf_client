@@ -78,8 +78,9 @@ class Camera(object):
 
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageSenseData(
-                            door_locked=1, images=[device_gateway_pb2.Image(
-                                aliyun_oss="%s/test/%s.jpg" % (self._aliyun.account_info.oss_path, i)) for i in range(len(frame_list))]))
+                            door_locked=1, images=[device_gateway_pb2.MessageSenseData.Image(
+                                aliyun_oss="%s/test/%s.jpg" % (
+                                    self._aliyun.account_info.oss_path, i)) for i in range(len(frame_list))]))
                 sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                 logging.debug(sense_data)
                 self.return_cmd_queue.put(sense_data)
@@ -99,7 +100,7 @@ class Camera(object):
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         device_token=self.client_config["device_token"],
-                        door_locked=0, images=[device_gateway_pb2.Image(
+                        door_locked=0, images=[device_gateway_pb2.MessageSenseData.Image(
                             aliyun_oss="%s/%s-%s/%s.jpg" % (
                                 self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i))
                             for i in range(len(frame_list))]))
@@ -119,7 +120,7 @@ class Camera(object):
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageSenseData(
                     device_token=self.client_config["device_token"],
-                    door_locked=1, images=[device_gateway_pb2.Image(
+                    door_locked=1, images=[device_gateway_pb2.MessageSenseData.Image(
                         aliyun_oss="%s/test/%s.jpg" % (self._aliyun.account_info.oss_path, i)) for i in range(len(frame_list))]))
                 self.return_cmd_queue.put(
                     device_gateway_pb2.StreamMessage(

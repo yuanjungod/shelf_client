@@ -339,19 +339,20 @@ message MessageRefreshCode {
 message MessageUnlockDoor {
 }
 
-// Image 表示发送给物体识别服务的图片信息.
-message Image {
-// 图片信息只会以一种方式传递.
-oneof info {
-  // 代表图片直接以字节数组进行传递.
-  bytes content = 1;
-  // 代表图片以阿里云 OSS 进行传递,其值为对应的地址.
-  string aliyun_oss = 2;
-}
-}
 
 // 上行 - 传感器数据.
 message MessageSenseData {
+  // Image 表示发送给物体识别服务的图片信息.
+  message Image {
+    // 图片信息只会以一种方式传递.
+    oneof info {
+      // 代表图片直接以字节数组进行传递.
+      bytes content = 1;
+      // 代表图片以阿里云 OSS 进行传递,其值为对应的地址.
+      string aliyun_oss = 2;
+    }
+  }
+
   // 采集数据时的设备令牌.
   //
   // 当令牌被吊销后采集数据时，此值为空.
@@ -362,9 +363,9 @@ message MessageSenseData {
   // false: 采集时，门是解锁状态.
   bool door_locked = 2;
   // 采集的图片数据.
-
   repeated Image images = 3;
 }
+
 
 // 下行 - 识别结果.
 message MessageObjectDectected {
