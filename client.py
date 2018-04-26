@@ -89,7 +89,6 @@ class Client(object):
             self.device_secret_head = header_manipulator_client_interceptor.header_adder_interceptor(
                 "device-secret", self._config["device-secret"])
 
-            self._config["device_token"] = authentication.device_token
             with open("config.json", "w") as f:
                 json.dump(self._config, f)
 

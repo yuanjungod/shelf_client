@@ -23,15 +23,6 @@ message AuthenticationReply {
   //
   // 设备与设备网关通信凭证的 Secret.
   string device_secret = 2;
-
-  // 设备授权令牌.
-  //
-  // 当设备正在被使用时, 此值不为空.
-  //
-  // 用于外置设备以用户视角同应用网关通信.
-  // 例如:
-  //   1. 显示屏展示当前用户的购买情况.
-  string device_token = 3;
 }
 
 // AuthorizationRequest 代表设备请求更新对外临时授权凭据的请求.
@@ -40,30 +31,50 @@ message AuthorizationRequest {
 
 // AuthorizationReply 代表设备请求更新对外临时授权凭据请求的响应.
 message AuthorizationReply {
-  // 设备对外临时授权凭据.
-  string code = 1;
+  // 当刷新令牌时设备正在使用,返回设备令牌.
+  message Token {
+    // 设备授权令牌.
+    //
+    // 当设备正在被使用时, 此值不为空.
+    //
+    // 用于外置设备以用户视角同应用网关通信.
+    // 例如:
+    //   1. 显示屏展示当前用户的购买情况.
+    string device_token = 1;
+    // 令牌对应的业务.
+    string biz_name = 2;
+  }
 
-  // 设备对外临时授权二维码.
-  //
-  // 通过授权二维码也可由对应服务端解析出授权凭据.
-  string qr_code = 2;
+  // 当刷新令牌时设备未使用，返回设备授权码.
+  message Code {
+    // 设备对外临时授权凭据.
+    string code = 1;
+    // 设备对外临时授权二维码.
+    //
+    // 通过授权二维码也可由对应服务端解析出授权凭据.
+    string qr_code = 2;
+    // 授权凭据有效时间.
+    //
+    // 代表临时授权凭据在多少秒内有效.
+    int32 expires_in = 3;
+  }
 
-  // 授权凭据有效时间.
-  //
-  // 代表临时授权凭据在多少秒内有效.
-  int32 expires_in = 3;
+  // 设备授权信息.
+  oneof auth {
+    // 授权令牌.
+    Token token = 1;
+    // 授权码.
+    Code code = 2;
+  }
 
   // 绑定货架 ID.
-  string shelf_id = 4;
-
+  string shelf_id = 5;
   // 绑定货架编码.
-  string shelf_code = 5;
-  
+  string shelf_code = 6;
   // 绑定货架名称.
-  string shelf_name = 6;
-
+  string shelf_name = 7;
   // 服务电话.
-  string service_phone = 7;
+  string service_phone = 8;
 }
 
 // StreamMessage 代表设备设备与设备网关之间的信息载体.
@@ -326,10 +337,21 @@ enum ServeState {
 
 
 
-// 下行 - 二维码被使用.
-message MessageCodeUsed {
+// 下行 - 创建设备令牌消息.
+message MessageCreateDeviceToken {
+  // 新创建的设备令牌.
+  string device_token = 1;
+  // 创建设备令牌的业务名.
+  string biz_name = 2;
+
+}
+
+// 下行 - 吊销设备令牌消息.
+message MessageRevokeDeviceToken{
+  // 被吊销的设备令牌.
   string device_token = 1;
 }
+
 
 // 下行 - 刷新二维码消息.
 message MessageRefreshCode {

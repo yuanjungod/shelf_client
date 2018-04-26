@@ -29,6 +29,7 @@ class Shelf(object):
         self.aliyun = None
         self.shelf_current_info = None
         self.client_config = client_config
+        self.scan_start = -1
 
     def init(self):
         self.door = Door()
@@ -96,16 +97,24 @@ class Shelf(object):
             if request.id != "":
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
             self._queue.put(device_gateway_pb2.AuthorizationRequest())
-        elif request.payload.type_url.find("MessageCodeUsed") != -1:
-            logging.debug("MessageCodeUsed&*********************************: %s" % request)
-            message_code_used = device_gateway_pb2.MessageCodeUsed()
+        elif request.payload.type_url.find("MessageCreateDeviceToken") != -1:
+            logging.debug("MessageCreateDeviceToken&*********************************: %s" % request)
+            message_code_used = device_gateway_pb2.MessageCreateDeviceToken()
             request.payload.Unpack(message_code_used)
             self.client_config["device_token"] = message_code_used.device_token
             with open("config.json", "w") as f:
                 json.dump(self.client_config, f)
-            self.shelf_display([4, {"scan": message_code_used.device_token}])
+            self.shelf_display([
+                4, {"device_token": message_code_used.device_token, "biz_name": message_code_used.biz_name}])
+            self.scan_start = time.time()
             if request.id != "":
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
+        elif request.payload.type_url.find("MessageRevokeDeviceToken") != -1:
+            logging.debug("MessageRevokeDeviceToken")
+            if request.id != "":
+                self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
+            self._queue.put(device_gateway_pb2.AuthorizationRequest())
+
 
 
 

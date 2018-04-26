@@ -5,6 +5,7 @@ from gateway_proto import device_gateway_pb2_grpc
 from gateway_proto import device_gateway_pb2
 from google.protobuf import any_pb2
 import logging
+import json
 
 
 class MessageController(object):
@@ -16,11 +17,12 @@ class MessageController(object):
         self._response_queue = response_queue
         self.client_config = client_config
         self._wait_for_confirm_msg = dict()
+        self.scan_start = None
         threading.Thread(target=self.simulation).start()
 
     def simulation(self):
         any = any_pb2.Any()
-        any.Pack(device_gateway_pb2.MessageCodeUsed(device_token="hehehe"))
+        any.Pack(device_gateway_pb2.MessageCreateDeviceToken(device_token="hehehe"))
         code_used = device_gateway_pb2.StreamMessage(
             id=str(time.time()), payload=any)
 
@@ -34,9 +36,9 @@ class MessageController(object):
             time.sleep(5)
             logging.debug("$$$$$$$$$$$$event$$$$$$$$$$$$$$$$$$$: %s" % type(event))
             self._request_queue.put(event)
-        while True:
-            time.sleep(60)
-            self._request_queue.put(device_gateway_pb2.AuthorizationRequest())
+        # while True:
+        #     time.sleep(60)
+        #     self._request_queue.put(device_gateway_pb2.AuthorizationRequest())
 
     def process_request(self):
         while True:
@@ -65,16 +67,27 @@ class MessageController(object):
                     logging.info("create_response_iterator: %s" % response)
                 if not isinstance(response, device_gateway_pb2.StreamMessage):
                     if isinstance(response, device_gateway_pb2.AuthorizationRequest):
+                        print "qwertyuiop"
                         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                         authorization_info = stub.Authorization(response)
-                        # print authorization_info
-                        self._shelf.shelf_current_info = {
-                            "code": authorization_info.code, "qr_code": authorization_info.qr_code,
-                            "expires_in": authorization_info.expires_in, "shelf_id": authorization_info.shelf_id,
-                            "shelf_code": authorization_info.shelf_code, "shelf_name": authorization_info.shelf_name,
-                            "service_phone": authorization_info.service_phone, "success": 1,
-                            "expires_time": time.time()+authorization_info.expires_in}
-                        self._shelf.shelf_display([6, self._shelf.shelf_current_info])
+                        if authorization_info.code != "":
+                            print "authorization_info"
+                            self._shelf.shelf_current_info = {
+                                "code": authorization_info.code.code, "qr_code": authorization_info.code.qr_code,
+                                "expires_in": authorization_info.code.expires_in, "shelf_id": authorization_info.shelf_id,
+                                "shelf_code": authorization_info.shelf_code, "shelf_name": authorization_info.shelf_name,
+                                "service_phone": authorization_info.service_phone, "success": 1,
+                                "expires_time": time.time()+authorization_info.code.expires_in}
+                            print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&", self._shelf.shelf_current_info
+                            self._shelf.shelf_display([6, self._shelf.shelf_current_info])
+                        else:
+                            self.client_config["device_token"] = response.device_token
+                            with open("config.json", "w") as f:
+                                json.dump(self.client_config, f)
+                            self._shelf.shelf_display([
+                                4, {"device_token": response.token.device_token,
+                                    "biz_name": response.token.biz_name}])
+                            self.scan_start = time.time()
                         continue
                     elif isinstance(response, device_gateway_pb2.AuthenticationRequest):
                         pass
