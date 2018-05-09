@@ -4,7 +4,7 @@ from video_tool import VideoTool
 from PIL import Image
 import cv2
 import threading
-from gateway_proto import device_gateway_pb2
+from device.proto.gateway import device_gateway_pb2
 import time
 
 import oss2

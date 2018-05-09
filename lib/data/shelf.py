@@ -2,7 +2,7 @@ from camera import Camera
 from door import Door
 from light import Light
 from lock import Lock
-from gateway_proto import device_gateway_pb2
+from device.proto.gateway import device_gateway_pb2
 from monitor import Monitor
 from lib.tools.aliyun import Aliyun
 from google.protobuf import any_pb2
@@ -78,11 +78,11 @@ class Shelf(object):
                     self.in_use = True
                     logging.debug("in use")
                     try_count = 5
-                    while not self.door.is_open() and try_count > 0:
-                        try_count -= 1
-                        time.sleep(1)
+                    # while self.door.get_door_status() and try_count > 0:
+                    #     try_count -= 1
+                    #     time.sleep(1)
 
-                    if self.door.is_open():
+                    if True:
                         self.shelf_display([3, {"open": 1}])
                         self.camera.push_frames_to_server(request)
                     else:
@@ -106,6 +106,10 @@ class Shelf(object):
                 json.dump(self.client_config, f)
             self.shelf_display([
                 4, {"device_token": message_code_used.device_token, "biz_name": message_code_used.biz_name}])
+            if self.in_use is False and self.is_init is True:
+                self.shelf_display([3, {"open": 1}])
+                self.camera.push_frames_to_server(request)
+
             self.scan_start = time.time()
             if request.id != "":
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))

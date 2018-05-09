@@ -1,8 +1,8 @@
 import Queue
 import time
 import threading
-from gateway_proto import device_gateway_pb2_grpc
-from gateway_proto import device_gateway_pb2
+from device.proto.gateway  import device_gateway_pb2_grpc
+from device.proto.gateway  import device_gateway_pb2
 from google.protobuf import any_pb2
 import logging
 import json
@@ -67,26 +67,30 @@ class MessageController(object):
                     logging.info("create_response_iterator: %s" % response)
                 if not isinstance(response, device_gateway_pb2.StreamMessage):
                     if isinstance(response, device_gateway_pb2.AuthorizationRequest):
-                        print "qwertyuiop"
                         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                         authorization_info = stub.Authorization(response)
-                        if authorization_info.code != "":
+                        print "qwertyuiop"
+                        print "#$$#$#$#$#$#$#$#$#$#$#$###$#", authorization_info.code.code != u""
+                        # logging.info(len(authorization_info.code))
+
+                        if authorization_info.code.code != "":
                             print "authorization_info"
                             self._shelf.shelf_current_info = {
                                 "code": authorization_info.code.code, "qr_code": authorization_info.code.qr_code,
                                 "expires_in": authorization_info.code.expires_in, "shelf_id": authorization_info.shelf_id,
                                 "shelf_code": authorization_info.shelf_code, "shelf_name": authorization_info.shelf_name,
-                                "service_phone": authorization_info.service_phone, "success": 1,
+                                "service_phone": authorization_info.service_phone, "success": True,
                                 "expires_time": time.time()+authorization_info.code.expires_in}
                             print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&", self._shelf.shelf_current_info
                             self._shelf.shelf_display([6, self._shelf.shelf_current_info])
                         else:
-                            self.client_config["device_token"] = response.device_token
+                            logging.info("authorization_info: %s" % authorization_info.token.device_token)
+                            self.client_config["device_token"] = authorization_info.token.device_token
                             with open("config.json", "w") as f:
                                 json.dump(self.client_config, f)
                             self._shelf.shelf_display([
-                                4, {"device_token": response.token.device_token,
-                                    "biz_name": response.token.biz_name}])
+                                4, {"device_token": authorization_info.token.device_token,
+                                    "biz_name": authorization_info.token.biz_name}])
                             self.scan_start = time.time()
                         continue
                     elif isinstance(response, device_gateway_pb2.AuthenticationRequest):
@@ -121,7 +125,10 @@ class MessageController(object):
                 yield response
             except:
                 pass
-            if self._shelf.shelf_current_info is not None and self._shelf.shelf_current_info["expires_time"] < time.time():
+
+            if self._shelf.shelf_current_info is not None and \
+                    self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.door.is_open is False:
+                print "self._shelf.door.is_open", self._shelf.door.is_open
                 self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
 
             for key, value in self._wait_for_confirm_msg.items():

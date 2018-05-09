@@ -10,7 +10,7 @@ import logging.config
 import time
 import traceback
 import math
-from gateway_proto import device_gateway_pb2, device_gateway_pb2_grpc
+from device.proto.gateway import device_gateway_pb2, device_gateway_pb2_grpc
 from lib.data.shelf import Shelf
 from lib.tools.message_controller import MessageController
 from lib.interceptors.headers import header_manipulator_client_interceptor
@@ -63,7 +63,7 @@ class Client(object):
             self.device_secret_head = header_manipulator_client_interceptor.header_adder_interceptor(
                 "device-secret", self._config["device-secret"])
 
-            self._config["device_token"] = authentication.device_token
+            # self._config["device_token"] = authentication.device_token
             with open("config.json", "w") as f:
                 json.dump(self._config, f)
         else:
