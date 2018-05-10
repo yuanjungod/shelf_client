@@ -109,6 +109,7 @@ class Shelf(object):
             if self.in_use is False and self.is_init is True:
                 self.shelf_display([3, {"open": 1}])
                 self.camera.push_frames_to_server(request)
+                self.in_use = True
 
             self.scan_start = time.time()
             if request.id != "":

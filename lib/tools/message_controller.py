@@ -31,14 +31,10 @@ class MessageController(object):
         unlock = device_gateway_pb2.StreamMessage(
             id=str(time.time()), payload=any)
         event_list = [device_gateway_pb2.AuthorizationRequest()]
-        # while True:
         for event in event_list:
             time.sleep(5)
             logging.debug("$$$$$$$$$$$$event$$$$$$$$$$$$$$$$$$$: %s" % type(event))
             self._request_queue.put(event)
-        # while True:
-        #     time.sleep(60)
-        #     self._request_queue.put(device_gateway_pb2.AuthorizationRequest())
 
     def process_request(self):
         while True:
@@ -57,7 +53,6 @@ class MessageController(object):
     def create_response_iterator(self):
         while True:
             try:
-                # logging.debug("waiting for response_queue")
                 if not self._shelf.camera.return_cmd_queue.empty():
                     self._response_queue.put(self._shelf.camera.return_cmd_queue.get())
                 response = self._response_queue.get(timeout=0.5)
@@ -86,11 +81,12 @@ class MessageController(object):
                         else:
                             logging.info("authorization_info: %s" % authorization_info.token.device_token)
                             self.client_config["device_token"] = authorization_info.token.device_token
+                            print self.client_config["device_token"], self.client_config["device_token"]
                             with open("config.json", "w") as f:
                                 json.dump(self.client_config, f)
-                            self._shelf.shelf_display([
-                                4, {"device_token": authorization_info.token.device_token,
-                                    "biz_name": authorization_info.token.biz_name}])
+                            # self._shelf.shelf_display([
+                            #     4, {"device_token": authorization_info.token.device_token,
+                            #         "biz_name": authorization_info.token.biz_name}])
                             self.scan_start = time.time()
                         continue
                     elif isinstance(response, device_gateway_pb2.AuthenticationRequest):
