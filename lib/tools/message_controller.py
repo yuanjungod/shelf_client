@@ -73,8 +73,7 @@ class MessageController(object):
                     response = self._response_queue.get(timeout=0.5)
 
                 logging.info("create_response_iterator: %s" % type(response))
-                logging.info("create_response_iterator: %s" % dir(response))
-                logging.info("create_response_iterator: %s" % str(type(response)).find("AuthorizationRequest"))
+
                 # if response == "shelf_init":
                 #     pass
                 # elif response.SerializeToString().find("StreamMessage") != -1:
@@ -115,9 +114,9 @@ class MessageController(object):
                             #         "biz_name": authorization_info.token.biz_name}])
                             self.scan_start = time.time()
                         continue
-                    elif response.SerializeToString().find("AuthenticationRequest") != -1:
+                    elif str(type(response)).find("AuthenticationRequest") != -1:
                         pass
-                    elif response.SerializeToString().find("AliyunFederationTokenRequest") != -1:
+                    elif str(type(response)).find("AliyunFederationTokenRequest") != -1:
                         logging.info("AliyunFederationTokenRequest")
                         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                         ali_token = stub.AliyunFederationToken(response)

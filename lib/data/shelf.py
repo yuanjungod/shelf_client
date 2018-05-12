@@ -53,7 +53,7 @@ class Shelf(object):
 
     def process_request(self, request):
         # print dir(request), isinstance(request, device_gateway_pb2.AuthorizationRequest)
-        if isinstance(request, device_gateway_pb2.StreamMessage):
+        if str(type(request)).find("StreamMessage") != -1:
             logging.info("process_request: %s" % request.payload.type_url)
         else:
             logging.info("process_request: %s" % type(request))
@@ -62,7 +62,7 @@ class Shelf(object):
                 self.in_use = True
                 self.camera.push_frames_to_server(request)
         #elif isinstance(request, device_gateway_pb2.AuthorizationRequest):
-        elif request.SerializeToString().find("AuthorizationRequest"):
+        elif str(type(request)).find("AuthorizationRequest"):
             logging.debug("AuthorizationRequest")
             self._queue.put(request)
         elif request.payload.type_url.find("MessageUnlockDoor") != -1:
