@@ -22,7 +22,7 @@ class Client(object):
     Host = None
     Port = None
 
-    def __init__(self):
+    def __init__(self, online=True):
         self._config = None
         self._queue = None
         self._shelf = None
@@ -30,6 +30,7 @@ class Client(object):
         self.device_id_header = None
         self.device_key_head = None
         self.device_secret_head = None
+        self.online = online
         logging.basicConfig(
             level=logging.DEBUG,
             format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
@@ -95,8 +96,8 @@ class Client(object):
         stream_channel = grpc.intercept_channel(
             self.Channel, self.device_id_header, self.device_key_head, self.device_secret_head)
         self._queue = Queue.Queue()
-        self._shelf = Shelf(self._queue, self._config)
-        self._message_manage = MessageController(stream_channel, self._shelf, self._queue, self._config)
+        self._shelf = Shelf(self._queue, self._config, self.online)
+        self._message_manage = MessageController(stream_channel, self._shelf, self._queue, self._config, self.online)
         self._shelf.init()
 
     def run(self):
@@ -109,8 +110,9 @@ if __name__ == "__main__":
     while True:
         count = 1
         try:
-            client = Client()
-            client.set_host("10.12.2.250", "10000")
+            client = Client(True)
+            #client.set_host("10.12.2.250", "10000")
+            client.set_host("device.guoxiaomei.cn", "10000")
             # client.set_host("localhost", "10000")
             client.run()
         except grpc.RpcError:

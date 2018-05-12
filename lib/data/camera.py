@@ -7,11 +7,14 @@ from lib.tools.aliyun import Aliyun
 from device.proto.gateway import device_gateway_pb2
 from google.protobuf import any_pb2
 import logging
+import cv2
+import os
+import datetime
 
 
 class Camera(object):
 
-    def __init__(self, door, light, aliyun, shelf_current_info, client_config, camera_count=1):
+    def __init__(self, door, light, aliyun, shelf_current_info, client_config, online=True, camera_count=1):
         self.working = 0
         self._light = light
         self._door = door
@@ -19,6 +22,7 @@ class Camera(object):
         self._aliyun = aliyun
         self.shelf_current_info = shelf_current_info
         self.client_config = client_config
+        self.online = online
         self._camera_instatnce_list = list()
         self._image_remote_save_url = list()
         for i in range(self._camera_count):
@@ -32,7 +36,7 @@ class Camera(object):
         self._image_remote_save_url = image_remote_save_url
 
     def take_photos(self):
-        if self._light.get_light_status():
+        if self._light.is_open:
             for i in self._camera_instatnce_list:
                 try:
                     yield i.next()
@@ -40,6 +44,7 @@ class Camera(object):
                     yield None
         else:
             self._light.open_light()
+            time.sleep(2)
             for i in self._camera_instatnce_list:
                 try:
                     i.next()
@@ -70,21 +75,38 @@ class Camera(object):
                 for frame in self.take_photos():
                     frame_list.append(frame)
                     print(frame.shape)
-                self._aliyun.check_account()
-                # print ["%s/test/%s.jpg" % ("123", i) for i in range(len(frame_list))]
-                print "*************************", self._aliyun.account_info.oss_path
-                self._aliyun.push_batch_image_2_aliyun([
-                    "%s/test/%s.jpg" % (self._aliyun.account_info.oss_path, i) for i in range(len(frame_list))], frame_list)
+                if self.online:
+                    self._aliyun.check_account()
+                    # print ["%s/test/%s.jpg" % ("123", i) for i in range(len(frame_list))]
+                    print "*************************", self._aliyun.account_info.oss_path
+                    self._aliyun.push_batch_image_2_aliyun([
+                        "%s/test/%s.jpg" % (self._aliyun.account_info.oss_path, i) for i in range(len(frame_list))], frame_list)
 
-                any = any_pb2.Any()
-                any.Pack(device_gateway_pb2.MessageSenseData(
-                            door_locked=device_gateway_pb2.DOOR_CLOSED, images=[device_gateway_pb2.MessageSenseData.Image(
-                                aliyun_oss="%s/test/%s.jpg" % (
-                                    self._aliyun.account_info.oss_path, i)) for i in range(len(frame_list))]))
-                sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
-                logging.debug(sense_data)
-                self.return_cmd_queue.put(sense_data)
-                logging.debug("init finish")
+                    any = any_pb2.Any()
+                    any.Pack(device_gateway_pb2.MessageSenseData(
+                                door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
+                                    aliyun_oss="%s/test/%s.jpg" % (
+                                        self._aliyun.account_info.oss_path, i)) for i in range(len(frame_list))]))
+                    sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
+                    # logging.debug(sense_data)
+                    self.return_cmd_queue.put(sense_data)
+                    logging.debug("init finish")
+                else:
+                    for i in range(len(frame_list)):
+                        if not os.path.exists("images"):
+                            os.makedirs("images")
+                        if not os.path.exists("images/%s" % datetime.date.today()):
+                            os.makedirs("images/%s" % datetime.date.today())
+                        cv2.imwrite("image/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
+                    any = any_pb2.Any()
+                    any.Pack(device_gateway_pb2.MessageSenseData(
+                        door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
+                            local_path="image/%s/%s.jpg" % (
+                                datetime.date.today(), i)) for i in range(len(frame_list))]))
+                    sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
+                    logging.debug(sense_data)
+                    self.return_cmd_queue.put(sense_data)
+
             else:
                 door_status = self._door.get_door_status()
 
@@ -97,20 +119,44 @@ class Camera(object):
                     for frame in self.take_photos():
                         frame_list.append(frame)
                         # print(frame.shape)
+                    if self.online:
+                        self._aliyun.check_account()
+                        self._aliyun.push_batch_image_2_aliyun([
+                            "%s/%s-%s/%s.jpg" % (
+                                self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i) for i in range(len(frame_list))],
+                            frame_list)
+                        any = any_pb2.Any()
+                        logging.debug("########asjdsakhcajbkcjahjcajscjascaschashlcaskcklaskck")
+                        any.Pack(device_gateway_pb2.MessageSenseData(
+                            device_token=self.client_config["device_token"],
+                            door_locked=False, images=[device_gateway_pb2.MessageSenseData.Image(
+                                aliyun_oss="%s/%s-%s/%s.jpg" % (
+                                    self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i))
+                                for i in range(len(frame_list))]))
+                        self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
+                    else:
+                        for i in range(len(frame_list)):
+                            if not os.path.exists("images"):
+                                os.makedirs("images")
+                            if not os.path.exists("images/%s" % datetime.date.today()):
+                                os.makedirs("images/%s" % datetime.date.today())
+                            cv2.imwrite("image/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
+                        any = any_pb2.Any()
+                        any.Pack(device_gateway_pb2.MessageSenseData(
+                            device_token=self.client_config["device_token"],
+                            door_locked=False,
+                            images=[device_gateway_pb2.MessageSenseData.Image(
+                                local_path="image/%s/%s.jpg" % (
+                                    datetime.date.today(), i)) for i in range(len(frame_list))]))
+                        sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
+                        logging.debug(sense_data)
+                        self.return_cmd_queue.put(sense_data)
 
-                    self._aliyun.check_account()
-                    self._aliyun.push_batch_image_2_aliyun([
-                        "%s/%s-%s/%s.jpg" % (
-                            self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i) for i in range(len(frame_list))],
-                        frame_list)
-                    any = any_pb2.Any()
-                    any.Pack(device_gateway_pb2.MessageSenseData(
-                        device_token=self.client_config["device_token"],
-                        door_locked=device_gateway_pb2.DOOR_OPENED, images=[device_gateway_pb2.MessageSenseData.Image(
-                            aliyun_oss="%s/%s-%s/%s.jpg" % (
-                                self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i))
-                            for i in range(len(frame_list))]))
-                    self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
+                # try_count = 3
+                # result = self._door.lock_lock()
+                # while result is False and try_count > 0:
+                #     result = self._door.lock_lock()
+                #     try_count -= 1
 
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorClosed())
@@ -120,20 +166,36 @@ class Camera(object):
                 for frame in self.take_photos():
                     frame_list.append(frame)
                     # print(frame.shape)
+                if self.online:
+                    self._aliyun.check_account()
+                    self._aliyun.push_batch_image_2_aliyun([
+                        "%s/%s-%s/%s.jpg" % (
+                            self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i) for i in range(len(frame_list))], frame_list)
 
-                self._aliyun.check_account()
-                self._aliyun.push_batch_image_2_aliyun([
-                    "%s/%s-%s/%s.jpg" % (
-                        self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i) for i in range(len(frame_list))], frame_list)
-
-                any = any_pb2.Any()
-                any.Pack(device_gateway_pb2.MessageSenseData(
-                    device_token=self.client_config["device_token"],
-                    door_locked=device_gateway_pb2.DOOR_CLOSED, images=[device_gateway_pb2.MessageSenseData.Image(
-                        aliyun_oss="%s/%s-%s/%s.jpg" % (
-                            self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i)) for i in range(len(frame_list))]))
-                self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
+                    any = any_pb2.Any()
+                    any.Pack(device_gateway_pb2.MessageSenseData(
+                        device_token=self.client_config["device_token"],
+                        door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
+                            aliyun_oss="%s/%s-%s/%s.jpg" % (
+                                self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i)) for i in range(len(frame_list))]))
+                    self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
+                else:
+                    for i in range(len(frame_list)):
+                        if not os.path.exists("images"):
+                            os.makedirs("images")
+                        if not os.path.exists("images/%s" % datetime.date.today()):
+                            os.makedirs("images/%s" % datetime.date.today())
+                        cv2.imwrite("image/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
+                    any = any_pb2.Any()
+                    any.Pack(device_gateway_pb2.MessageSenseData(
+                        door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
+                            local_path="image/%s/%s.jpg" % (
+                                datetime.date.today(), i)) for i in range(len(frame_list))]))
+                    sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
+                    logging.debug(sense_data)
+                    self.return_cmd_queue.put(sense_data)
 
     def push_frames_to_server(self, request):
+        logging.debug("push_frames_to_server: %s" % request)
         self._image_task_queue.put(request)
 

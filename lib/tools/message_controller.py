@@ -10,7 +10,7 @@ import json
 
 class MessageController(object):
 
-    def __init__(self, channel, shelf, response_queue, client_config):
+    def __init__(self, channel, shelf, response_queue, client_config, online=True):
         self._channel = channel
         self._shelf = shelf
         self._request_queue = Queue.Queue()
@@ -18,6 +18,7 @@ class MessageController(object):
         self.client_config = client_config
         self._wait_for_confirm_msg = dict()
         self.scan_start = None
+        self.online = online
         threading.Thread(target=self.simulation).start()
 
     def simulation(self):
@@ -57,7 +58,7 @@ class MessageController(object):
                     self._response_queue.put(self._shelf.camera.return_cmd_queue.get())
                 response = self._response_queue.get(timeout=0.5)
                 if isinstance(response, device_gateway_pb2.StreamMessage):
-                    logging.info("create_response_iterator: %s" % response.payload.type_url)
+                    logging.info("create_response_iterator: %s" % response)
                 else:
                     logging.info("create_response_iterator: %s" % response)
                 if not isinstance(response, device_gateway_pb2.StreamMessage):
@@ -81,7 +82,6 @@ class MessageController(object):
                         else:
                             logging.info("authorization_info: %s" % authorization_info.token.device_token)
                             self.client_config["device_token"] = authorization_info.token.device_token
-                            print self.client_config["device_token"], self.client_config["device_token"]
                             with open("config.json", "w") as f:
                                 json.dump(self.client_config, f)
                             # self._shelf.shelf_display([
@@ -106,25 +106,24 @@ class MessageController(object):
                         message_sense_data = device_gateway_pb2.MessageSenseData()
                         response.payload.Unpack(message_sense_data)
                         if message_sense_data.door_locked is True and self._shelf.camera.working == 0:
-                            self._shelf.in_use = False
                             self.client_config["device_token"] = ""
                             if self._shelf.can_serve is False:
                                 self._shelf.can_serve = True
                             else:
                                 self._shelf.shelf_display([2, ])
-                        yield response
+                        # yield response
                         logging.info("MessageSenseData Finished, shelf in use is: %s" % self._shelf.in_use)
-                        if message_sense_data.door_locked is False:
-                            continue
+                        # if message_sense_data.door_locked is False:
+                        #     continue
                 if response.id != "":
                     self._wait_for_confirm_msg[response.id] = {"timestamp": time.time(), "response": response}
+                logging.debug(response)
                 yield response
             except:
                 pass
 
             if self._shelf.shelf_current_info is not None and \
-                    self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.door.is_open is False:
-                print "self._shelf.door.is_open", self._shelf.door.is_open
+                    self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
                 self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
 
             for key, value in self._wait_for_confirm_msg.items():

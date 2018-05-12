@@ -1,5 +1,5 @@
 from camera import Camera
-from door import Door
+from device import Device
 from light import Light
 from lock import Lock
 from device.proto.gateway import device_gateway_pb2
@@ -15,12 +15,12 @@ import random
 
 class Shelf(object):
 
-    def __init__(self, queue, client_config):
+    def __init__(self, queue, client_config, online=True):
         self.is_init = False
         self.in_use = False
         self.can_serve = False
         self.camera = None
-        self.door = None
+        self.device = None
         self.light = None
         self.monitor = None
         self.lock = None
@@ -29,17 +29,18 @@ class Shelf(object):
         self.aliyun = None
         self.shelf_current_info = None
         self.client_config = client_config
+        self.online = online
         self.scan_start = -1
 
     def init(self):
-        self.door = Door()
+        self.device = Device()
         self.light = Light()
         self.lock = Lock()
 
         self.monitor = Monitor("localhost", 9999)
         # self.monitor.init()
         self.aliyun = Aliyun(self._queue)
-        self.camera = Camera(self.door, self.light, self.aliyun, self.shelf_current_info, self.client_config)
+        self.camera = Camera(self.device, self.light, self.aliyun, self.shelf_current_info, self.client_config, self.online)
         self._queue.put("shelf_init")
         self.is_init = True
 
@@ -69,6 +70,7 @@ class Shelf(object):
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
             if self.check_device():
                 open_result = self.lock.open_lock()
+                # open_result = self.device.open_lock()
                 if open_result:
                     if request.id != "":
                         any = any_pb2.Any()
@@ -77,7 +79,7 @@ class Shelf(object):
                 else:
                     self.in_use = True
                     logging.debug("in use")
-                    try_count = 5
+                    # try_count = 5
                     # while self.door.get_door_status() and try_count > 0:
                     #     try_count -= 1
                     #     time.sleep(1)
@@ -98,23 +100,29 @@ class Shelf(object):
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
             self._queue.put(device_gateway_pb2.AuthorizationRequest())
         elif request.payload.type_url.find("MessageCreateDeviceToken") != -1:
+            self.in_use = True
             logging.debug("MessageCreateDeviceToken&*********************************: %s" % request)
             message_code_used = device_gateway_pb2.MessageCreateDeviceToken()
             request.payload.Unpack(message_code_used)
-            self.client_config["device_token"] = message_code_used.device_token
-            with open("config.json", "w") as f:
-                json.dump(self.client_config, f)
-            self.shelf_display([
-                4, {"device_token": message_code_used.device_token, "biz_name": message_code_used.biz_name}])
-            if self.in_use is False and self.is_init is True:
-                self.shelf_display([3, {"open": 1}])
-                self.camera.push_frames_to_server(request)
-                self.in_use = True
+            if message_code_used.biz_name == "bind-device":
+                pass
+            else:
+                self.client_config["device_token"] = message_code_used.device_token
+                with open("config.json", "w") as f:
+                    json.dump(self.client_config, f)
+                self.shelf_display([
+                    4, {"device_token": message_code_used.device_token, "biz_name": message_code_used.biz_name}])
+                if self.in_use is False and self.is_init is True:
+                    self.shelf_display([3, {"open": 1}])
+                    self.light.open_light()
+                    self.camera.push_frames_to_server(request)
+                    self.in_use = True
 
-            self.scan_start = time.time()
-            if request.id != "":
-                self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
+                self.scan_start = time.time()
+                if request.id != "":
+                    self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
         elif request.payload.type_url.find("MessageRevokeDeviceToken") != -1:
+            self.in_use = False
             logging.debug("MessageRevokeDeviceToken")
             if request.id != "":
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
