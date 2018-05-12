@@ -10,12 +10,13 @@ import logging.config
 import time
 import traceback
 import math
-from device.proto.gateway import device_gateway_pb2, device_gateway_pb2_grpc
+from lib import device_gateway_pb2, device_gateway_pb2_grpc
 from lib.data.shelf import Shelf
 from lib.tools.message_controller import MessageController
 from lib.interceptors.headers import header_manipulator_client_interceptor
-
-
+import sys;
+#sys.path.append("/home/gxm/code/shelf_client/device")
+#sys.path.append("/home/gxm/code/shelf_client/device/proto")
 class Client(object):
 
     Channel = None

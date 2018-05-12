@@ -3,9 +3,10 @@ import time
 import threading
 from device.proto.gateway  import device_gateway_pb2_grpc
 from device.proto.gateway  import device_gateway_pb2
-from google.protobuf import any_pb2
+from lib import any_pb2
 import logging
 import json
+import traceback
 
 
 class MessageController(object):
@@ -40,11 +41,12 @@ class MessageController(object):
     def process_request(self):
         while True:
             request = self._request_queue.get()
-            # logging.debug("process_request: %s" % type(request))
-            if hasattr(request, "reply_to") and request.reply_to != "":
+            if request == "shelf_init":
+                self._shelf.process_request(request)
+            elif hasattr(request, "reply_to") and request.reply_to != "":
                 if request.reply_to in self._wait_for_confirm_msg:
                     self._wait_for_confirm_msg.pop(request.reply_to)
-            elif isinstance(request, device_gateway_pb2.AliyunFederationTokenRequest):
+            elif request.SerializeToString().find("AliyunFederationTokenRequest") != -1:
                 stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                 ali_token = stub.AliyunFederationToken(request)
                 self._shelf.aliyun.set_aliyun(ali_token)
@@ -56,13 +58,32 @@ class MessageController(object):
             try:
                 if not self._shelf.camera.return_cmd_queue.empty():
                     self._response_queue.put(self._shelf.camera.return_cmd_queue.get())
-                response = self._response_queue.get(timeout=0.5)
-                if isinstance(response, device_gateway_pb2.StreamMessage):
+                if self._response_queue.empty():
+                    if self._shelf.shelf_current_info is not None and \
+                            self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
+                        self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
+
+                    for key, value in self._wait_for_confirm_msg.items():
+                        if time.time() - value["timestamp"] > 5:
+                            self._wait_for_confirm_msg[key]["timestamp"] = time.time()
+                            yield value["response"]
+                    time.sleep(0.5)
+                    continue
+                else:
+                    response = self._response_queue.get(timeout=0.5)
+                print "fuck you!!!!"
+                logging.info("create_response_iterator: %s" % type(response))
+                if response == "shelf_init":
+                    pass
+                elif response.SerializeToString().find("StreamMessage") != -1:
                     logging.info("create_response_iterator: %s" % response)
                 else:
                     logging.info("create_response_iterator: %s" % response)
-                if not isinstance(response, device_gateway_pb2.StreamMessage):
-                    if isinstance(response, device_gateway_pb2.AuthorizationRequest):
+                if response == "shelf_init" or response.SerializeToString().find("StreamMessage") == -1:
+                    if response == "shelf_init":
+                        self._request_queue.put(response)
+                        continue 
+                    elif response.SerializeToString().find("AuthorizationRequest") != -1:
                         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                         authorization_info = stub.Authorization(response)
                         print "qwertyuiop"
@@ -89,9 +110,9 @@ class MessageController(object):
                             #         "biz_name": authorization_info.token.biz_name}])
                             self.scan_start = time.time()
                         continue
-                    elif isinstance(response, device_gateway_pb2.AuthenticationRequest):
+                    elif response.SerializeToString().find("AuthenticationRequest") != -1:
                         pass
-                    elif isinstance(response, device_gateway_pb2.AliyunFederationTokenRequest):
+                    elif response.SerializeToString().find("AliyunFederationTokenRequest") != -1:
                         logging.info("AliyunFederationTokenRequest")
                         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                         ali_token = stub.AliyunFederationToken(response)
@@ -120,7 +141,7 @@ class MessageController(object):
                 logging.debug(response)
                 yield response
             except:
-                pass
+                logging.error(traceback.format_exc())
 
             if self._shelf.shelf_current_info is not None and \
                     self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:

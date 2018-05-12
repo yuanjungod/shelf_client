@@ -2,16 +2,15 @@ from camera import Camera
 from device import Device
 from light import Light
 from lock import Lock
-from device.proto.gateway import device_gateway_pb2
+from lib import device_gateway_pb2
 from monitor import Monitor
 from lib.tools.aliyun import Aliyun
-from google.protobuf import any_pb2
+from lib import any_pb2
 import time
 import logging
 import json
 import threading
 import random
-
 
 class Shelf(object):
 
@@ -53,6 +52,7 @@ class Shelf(object):
         self.monitor.show(message)
 
     def process_request(self, request):
+        # print dir(request), isinstance(request, device_gateway_pb2.AuthorizationRequest)
         if isinstance(request, device_gateway_pb2.StreamMessage):
             logging.info("process_request: %s" % request.payload.type_url)
         else:
@@ -61,7 +61,8 @@ class Shelf(object):
             if self.in_use is False:
                 self.in_use = True
                 self.camera.push_frames_to_server(request)
-        elif isinstance(request, device_gateway_pb2.AuthorizationRequest):
+        #elif isinstance(request, device_gateway_pb2.AuthorizationRequest):
+        elif request.SerializeToString().find("AuthorizationRequest"):
             logging.debug("AuthorizationRequest")
             self._queue.put(request)
         elif request.payload.type_url.find("MessageUnlockDoor") != -1:

@@ -4,8 +4,8 @@ import Queue
 import sqlite3
 from lib.tools.video_tool import VideoTool
 from lib.tools.aliyun import Aliyun
-from device.proto.gateway import device_gateway_pb2
-from google.protobuf import any_pb2
+from lib import device_gateway_pb2
+from lib import any_pb2
 import logging
 import cv2
 import os
