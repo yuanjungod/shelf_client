@@ -74,7 +74,7 @@ class MessageController(object):
 
                 logging.info("create_response_iterator: %s" % type(response))
                 logging.info("create_response_iterator: %s" % dir(response))
-                logging.info("create_response_iterator: %s" % response.SerializeToString())
+                logging.info("create_response_iterator: %s" % str(type(response)).find("AuthorizationRequest"))
                 # if response == "shelf_init":
                 #     pass
                 # elif response.SerializeToString().find("StreamMessage") != -1:
@@ -88,7 +88,7 @@ class MessageController(object):
                         print "ASDFGGGGGGGGGGGGGGGGGG"
                         self._request_queue.put(response)
                         continue 
-                    elif response.SerializeToString().find("AuthorizationRequest") != -1:
+                    elif str(type(response)).find("AuthorizationRequest") != -1:
                         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                         authorization_info = stub.Authorization(response)
                         print "qwertyuiop"
