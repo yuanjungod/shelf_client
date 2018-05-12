@@ -81,8 +81,9 @@ class MessageController(object):
                 #     logging.info("create_response_iterator: %s" % response)
                 if response == "shelf_init" or response.SerializeToString().find("StreamMessage") == -1:
                     print "fuck you!!!!"
-                    print response.SerializeToString(), type(response.SerializeToString())
+                    # print response.SerializeToString(), type(response.SerializeToString())
                     if response == "shelf_init":
+                        print "ASDFGGGGGGGGGGGGGGGGGG"
                         self._request_queue.put(response)
                         continue 
                     elif response.SerializeToString().find("AuthorizationRequest") != -1:
