@@ -73,6 +73,7 @@ class MessageController(object):
                     response = self._response_queue.get(timeout=0.5)
 
                 logging.info("create_response_iterator: %s" % type(response))
+                logging.info("create_response_iterator: %s" % dir(response))
                 # if response == "shelf_init":
                 #     pass
                 # elif response.SerializeToString().find("StreamMessage") != -1:
