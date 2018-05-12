@@ -212,7 +212,9 @@ gcc lock_test.c -L. -llock -o lock_test
 测试：
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
 ldd
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
 sudo chmod 666 /dev/parport0
+sudo chmod 666 /dev/ttyS0
 ./lock_test
 
 

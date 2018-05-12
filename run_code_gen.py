@@ -14,11 +14,12 @@
 """Runs protoc with the gRPC plugin to generate messages and gRPC stubs."""
 
 from grpc_tools import protoc
-
-protoc.main((
+print "run"
+print protoc.main((
     '',
     '-I.',
     '--python_out=.',
     '--grpc_python_out=.',
-    './device/proto/gateway/device_gateway.proto',
+    #'./device/proto/gateway/device_gateway.proto',
+    './device/google/protobuf/any.proto'
 ))
