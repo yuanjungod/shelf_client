@@ -71,15 +71,16 @@ class MessageController(object):
                     continue
                 else:
                     response = self._response_queue.get(timeout=0.5)
-                print "fuck you!!!!"
+
                 logging.info("create_response_iterator: %s" % type(response))
-                if response == "shelf_init":
-                    pass
-                elif response.SerializeToString().find("StreamMessage") != -1:
-                    logging.info("create_response_iterator: %s" % response)
-                else:
-                    logging.info("create_response_iterator: %s" % response)
+                # if response == "shelf_init":
+                #     pass
+                # elif response.SerializeToString().find("StreamMessage") != -1:
+                #     logging.info("create_response_iterator: %s" % response)
+                # else:
+                #     logging.info("create_response_iterator: %s" % response)
                 if response == "shelf_init" or response.SerializeToString().find("StreamMessage") == -1:
+                    print "fuck you!!!!"
                     if response == "shelf_init":
                         self._request_queue.put(response)
                         continue 
