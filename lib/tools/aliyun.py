@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from video_tool import VideoTool
-from PIL import Image
 import cv2
 import threading
 from device.proto.gateway import device_gateway_pb2

@@ -21,4 +21,5 @@ protoc.main((
     '--python_out=.',
     '--grpc_python_out=.',
     './device/proto/gateway/device_gateway.proto',
+    # './device/google/protobuf/any.proto'
 ))
