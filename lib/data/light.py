@@ -48,7 +48,7 @@ class Light(object):
 
 if __name__ == "__main__":
     led = Light()
-    # led.open_all_light()
-    led.close_light(2)
+    led.open_all_light()
+    # led.close_light(2)
 
 
