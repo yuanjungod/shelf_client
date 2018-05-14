@@ -129,6 +129,7 @@ class Shelf(object):
             logging.debug("MessageRevokeDeviceToken")
             if request.id != "":
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
+            logging.debug(type(device_gateway_pb2.AuthorizationRequest()))
             self._queue.put(device_gateway_pb2.AuthorizationRequest())
 
 
