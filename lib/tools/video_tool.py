@@ -89,7 +89,7 @@ if __name__ == "__main__":
     video_tool = VideoTool("../models/haarcascades/haarcascade_frontalcatface.xml")
     i = 0
 
-    for face_img in video_tool.convert_video_2_frame(8):
+    for face_img in video_tool.convert_video_2_frame(9):
         i += 1
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 85]
         result, encimg = cv2.imencode('.jpg', face_img, encode_param)
