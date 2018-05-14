@@ -13,7 +13,7 @@ class Light(object):
         self.func = self.lib.LED_Board_init
         self.func.restype = c_int
         self.open_fd_list = [self.func() for i in range(3)]
-        self.close_fd_list = [[self.func() for i in range(3)]]
+        self.close_fd_list = [self.func() for i in range(3)]
 
         print "led init ret:"
 
