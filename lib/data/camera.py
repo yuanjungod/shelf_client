@@ -101,7 +101,7 @@ class Camera(object):
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
-                            local_path="images/%s/%s-%s.jpg" % (
+                            local_path="http://192.168.1.180:8888/images/%s/%s-%s.jpg" % (
                                 datetime.date.today(), time.time(), i)) for i in range(len(frame_list))]))
                     sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                     logging.debug(sense_data)
@@ -145,7 +145,7 @@ class Camera(object):
                             device_token=self.client_config["device_token"],
                             door_locked=False,
                             images=[device_gateway_pb2.MessageSenseData.Image(
-                                local_path="images/%s/%s-%s.jpg" % (
+                                local_path="http://192.168.1.180:8888/images/%s/%s-%s.jpg" % (
                                     datetime.date.today(), photo_time, i)) for i in range(len(frame_list))]))
                         sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                         logging.debug(sense_data)
@@ -190,7 +190,7 @@ class Camera(object):
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
-                            local_path="images/%s/%s-%s.jpg" % (
+                            local_path="http://192.168.1.180:8888/images/%s/%s-%s.jpg" % (
                                 datetime.date.today(), photo_time, i)) for i in range(len(frame_list))]))
                     sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                     logging.debug(sense_data)
