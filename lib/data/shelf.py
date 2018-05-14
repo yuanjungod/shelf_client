@@ -71,7 +71,7 @@ class Shelf(object):
             if self.check_device():
                 # open_result = self.lock.open_lock()
                 open_result = self.device.open_lock()
-                if open_result:
+                if not open_result:
                     if request.id != "":
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageDeviceState(lock=3))
@@ -81,7 +81,7 @@ class Shelf(object):
                     logging.debug("in use")
                     try_count = 5
                     door_status = self.device.door_status.next()
-                    while door_status and try_count > 0:
+                    while not door_status and try_count > 0:
                         door_status = self.device.door_status.next()
                         try_count -= 1
                         time.sleep(1)
@@ -92,7 +92,7 @@ class Shelf(object):
                     else:
                         self.device.lock_lock()
                         any = any_pb2.Any()
-                        any.Pack(device_gateway_pb2.MessageDeviceState(lock=2))
+                        any.Pack(device_gateway_pb2.MessageDoorClosed())
                         self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id, payload=any))
             logging.debug("#############################fuck#############################%s, %s" % (self.is_init, self.in_use))
 

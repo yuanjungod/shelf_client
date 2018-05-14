@@ -38,3 +38,8 @@ class Light(object):
             self.close_light()
 
 
+if __name__ == "__main__":
+    led = Light()
+    led.close_light()
+
+

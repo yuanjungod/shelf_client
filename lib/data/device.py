@@ -31,6 +31,7 @@ class Device(object):
             time.sleep(1)
 
     def get_lock_status1(self):
+        # open: True, close: False
         while True:
             result = self.lock_status_func(self.fd)
             print "Lock Status:", result
