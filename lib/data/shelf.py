@@ -58,7 +58,7 @@ class Shelf(object):
             logging.info("process_request: %s" % type(request))
         if request == "shelf_init":
             if self.in_use is False:
-                self.in_use = True
+                # self.in_use = True
                 self.light.open_all_light()
                 self.camera.push_frames_to_server(request)
         elif str(type(request)).find("AuthorizationRequest"):
