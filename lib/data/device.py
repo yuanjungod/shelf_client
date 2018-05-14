@@ -23,6 +23,7 @@ class Device(object):
         self.door_func_status.restype = c_bool
 
     def get_door_status1(self):
+        # open: True, close: False
         while True:
             result = self.door_func_status(self.fd)
             print "Door Status:", result
@@ -71,7 +72,7 @@ class Device(object):
 if __name__ == "__main__":
     device = Device()
     while True:
-        print device.door_status.next()
+        print device.lock_status.next()
     # print device.lock_lock()
     # print device.open_lock()
 
