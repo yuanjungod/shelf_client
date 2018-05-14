@@ -9,8 +9,7 @@ from lib import any_pb2
 import time
 import logging
 import json
-import threading
-import random
+
 
 class Shelf(object):
 
@@ -60,6 +59,7 @@ class Shelf(object):
         if request == "shelf_init":
             if self.in_use is False:
                 self.in_use = True
+                self.light.open_all_light()
                 self.camera.push_frames_to_server(request)
         elif str(type(request)).find("AuthorizationRequest"):
             logging.debug("AuthorizationRequest")
@@ -70,6 +70,7 @@ class Shelf(object):
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
             if self.check_device():
                 # open_result = self.lock.open_lock()
+                self.light.open_all_light()
                 open_result = self.device.open_lock()
                 if not open_result:
                     if request.id != "":

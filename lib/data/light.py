@@ -33,6 +33,7 @@ class Light(object):
         self.open_light(3)
         self.is_open = True
         self.open_time = time.time()
+        time.sleep(1)
 
     def close_all_light(self):
         self.close_light(1)
@@ -40,10 +41,11 @@ class Light(object):
         self.close_light(3)
         self.is_open = False
         self.close_time = time.time()
+        time.sleep(1)
 
-    # def auto_check(self):
-    #     if self.is_open and time.time() - self.open_time > 300:
-    #         self.close_light()
+    def auto_check(self):
+        if self.is_open and time.time() - self.open_time > 300:
+            self.close_all_light()
 
 
 if __name__ == "__main__":
