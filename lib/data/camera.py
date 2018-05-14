@@ -14,10 +14,10 @@ import datetime
 
 class Camera(object):
 
-    def __init__(self, door, light, aliyun, shelf_current_info, client_config, online=True, camera_count=1):
+    def __init__(self, device, light, aliyun, shelf_current_info, client_config, online=True, camera_count=1):
         self.working = 0
         self._light = light
-        self._door = door
+        self._device = device
         self._camera_count = camera_count
         self._aliyun = aliyun
         self.shelf_current_info = shelf_current_info
@@ -111,7 +111,7 @@ class Camera(object):
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorOpened())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-                while self._door.door_status.next():
+                while self._device.door_status.next():
                     frame_list = list()
                     for frame in self.take_photos():
                         frame_list.append(frame)
@@ -151,11 +151,11 @@ class Camera(object):
                         logging.debug(sense_data)
                         self.return_cmd_queue.put(sense_data)
 
-                # try_count = 3
-                # result = self._door.lock_lock()
-                # while result is False and try_count > 0:
-                #     result = self._door.lock_lock()
-                #     try_count -= 1
+                try_count = 3
+                result = self._device.lock_lock()
+                while result is False and try_count > 0:
+                    result = self._device.lock_lock()
+                    try_count -= 1
 
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorClosed())
