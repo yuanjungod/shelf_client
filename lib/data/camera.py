@@ -92,12 +92,13 @@ class Camera(object):
                     self.return_cmd_queue.put(sense_data)
                     logging.debug("init finish")
                 else:
+                    if not os.path.exists("images"):
+                        os.makedirs("images")
+                    if not os.path.exists("images/%s" % datetime.date.today()):
+                        os.makedirs("images/%s" % datetime.date.today())
+                    photo_time = time.time()
                     for i in range(len(frame_list)):
-                        if not os.path.exists("images"):
-                            os.makedirs("images")
-                        if not os.path.exists("images/%s" % datetime.date.today()):
-                            os.makedirs("images/%s" % datetime.date.today())
-                        cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
+                        cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), photo_time, i), frame_list[i])
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
@@ -134,11 +135,11 @@ class Camera(object):
                         self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
                     else:
                         photo_time = time.time()
+                        if not os.path.exists("images"):
+                            os.makedirs("images")
+                        if not os.path.exists("images/%s" % datetime.date.today()):
+                            os.makedirs("images/%s" % datetime.date.today())
                         for i in range(len(frame_list)):
-                            if not os.path.exists("images"):
-                                os.makedirs("images")
-                            if not os.path.exists("images/%s" % datetime.date.today()):
-                                os.makedirs("images/%s" % datetime.date.today())
                             cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), photo_time, i), frame_list[i])
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageSenseData(

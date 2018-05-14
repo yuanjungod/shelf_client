@@ -69,7 +69,6 @@ class MessageController(object):
                             yield value["response"]
                     self._shelf.light.auto_check()
                     time.sleep(0.5)
-
                     continue
                 else:
                     response = self._response_queue.get(timeout=0.5)
