@@ -73,7 +73,10 @@ class Device(object):
 if __name__ == "__main__":
     device = Device()
     while True:
-        print device.lock_status.next()
-    # print device.lock_lock()
-    # print device.open_lock()
+        if device.lock_status.next():
+            print device.lock_lock()
+            time.sleep(10)
+        else:
+            print device.open_lock()
+            time.sleep(10)
 
