@@ -46,7 +46,7 @@ class MessageController(object):
             elif hasattr(request, "reply_to") and request.reply_to != "":
                 if request.reply_to in self._wait_for_confirm_msg:
                     self._wait_for_confirm_msg.pop(request.reply_to)
-            elif request.SerializeToString().find("AliyunFederationTokenRequest") != -1:
+            elif str(type(request)).find("AliyunFederationTokenRequest") != -1:
                 stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                 ali_token = stub.AliyunFederationToken(request)
                 self._shelf.aliyun.set_aliyun(ali_token)
