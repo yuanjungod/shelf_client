@@ -61,7 +61,6 @@ class Shelf(object):
             if self.in_use is False:
                 self.in_use = True
                 self.camera.push_frames_to_server(request)
-        #elif isinstance(request, device_gateway_pb2.AuthorizationRequest):
         elif str(type(request)).find("AuthorizationRequest"):
             logging.debug("AuthorizationRequest")
             self._queue.put(request)
@@ -70,8 +69,8 @@ class Shelf(object):
             if request.id != "":
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
             if self.check_device():
-                open_result = self.lock.open_lock()
-                # open_result = self.device.open_lock()
+                # open_result = self.lock.open_lock()
+                open_result = self.device.open_lock()
                 if open_result:
                     if request.id != "":
                         any = any_pb2.Any()
@@ -80,16 +79,18 @@ class Shelf(object):
                 else:
                     self.in_use = True
                     logging.debug("in use")
-                    # try_count = 5
-                    # while self.door.get_door_status() and try_count > 0:
-                    #     try_count -= 1
-                    #     time.sleep(1)
+                    try_count = 5
+                    door_status = self.device.door_status.next()
+                    while door_status and try_count > 0:
+                        door_status = self.device.door_status.next()
+                        try_count -= 1
+                        time.sleep(1)
 
-                    if True:
+                    if door_status:
                         self.shelf_display([3, {"open": 1}])
                         self.camera.push_frames_to_server(request)
                     else:
-                        self.lock.close_lock()
+                        self.device.lock_lock()
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageDeviceState(lock=2))
                         self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id, payload=any))

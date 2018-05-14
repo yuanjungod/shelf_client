@@ -26,23 +26,27 @@ class Device(object):
 
     def get_door_status1(self):
         while True:
-            print "Door Status:"
-            yield self.door_func_status(self.fd)
+            result = self.door_func_status(self.fd)
+            print "Door Status:", result
+            yield result
             time.sleep(1)
 
     def get_lock_status1(self):
         while True:
-            print "Lock Status:"
-            yield self.lock_status_func(self.fd)
+            result = self.lock_status_func(self.fd)
+            print "Lock Status:", result
+            yield result
             time.sleep(1)
 
     def lock_lock(self):
-        print "close door"
-        return self.close_func(self.fd)
+        result = self.close_func(self.fd)
+        print "close door", result
+        return result
 
     def open_lock(self):
-        print "open door"
-        print self.open_func(self.fd)
+        result = self.open_func(self.fd)
+        print "open door", result
+        return result
 
     def get_door_status(self):
         for i in range(3):
@@ -60,3 +64,9 @@ class Device(object):
             return True
         else:
             return False
+
+
+if __name__ == "__main__":
+    device = Device()
+    print device.lock_lock()
+

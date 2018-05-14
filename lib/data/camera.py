@@ -108,13 +108,10 @@ class Camera(object):
                     self.return_cmd_queue.put(sense_data)
 
             else:
-                door_status = self._door.get_door_status()
-
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorOpened())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-
-                while door_status.next():
+                while self._door.door_status.next():
                     frame_list = list()
                     for frame in self.take_photos():
                         frame_list.append(frame)

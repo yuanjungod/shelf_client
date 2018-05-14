@@ -74,13 +74,7 @@ class MessageController(object):
 
                 logging.info("create_response_iterator: %s" % type(response))
 
-                # if response == "shelf_init":
-                #     pass
-                # elif response.SerializeToString().find("StreamMessage") != -1:
-                #     logging.info("create_response_iterator: %s" % response)
-                # else:
-                #     logging.info("create_response_iterator: %s" % response)
-                if response == "shelf_init" or response.SerializeToString().find("StreamMessage") == -1:
+                if response == "shelf_init" or str(type(response)).find("StreamMessage") == -1:
                     print "fuck you!!!!"
                     # print response.SerializeToString(), type(response.SerializeToString())
                     if response == "shelf_init":
