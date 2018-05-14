@@ -49,7 +49,7 @@ class Device(object):
         open_func = self.lib.open_door
         open_func.restype = c_int
         result = open_func(self.fd)
-        print "open lock", result
+        print "open lock", result == 0
         return result == 0
 
     def get_door_status(self):
