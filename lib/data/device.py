@@ -15,11 +15,10 @@ class Device(object):
         logging.debug(self.fd)
         self.door_status = self.get_door_status1()
         self.lock_status = self.get_lock_status1()
-        self.close_func = self.lib.close_door
-        self.close_func.restype = c_int
 
         self.lock_status_func = self.lib.getLockState
         self.lock_status_func.restype = c_bool
+
         self.door_func_status = self.lib.getDoorState
         self.door_func_status.restype = c_bool
 
@@ -38,16 +37,18 @@ class Device(object):
             time.sleep(1)
 
     def lock_lock(self):
-        result = self.close_func(self.fd)
+        close_func = self.lib.close_door
+        close_func.restype = c_int
+        result = close_func(self.fd)
         print "close lock", result
-        return result
+        return result == 0
 
     def open_lock(self):
         open_func = self.lib.open_door
         open_func.restype = c_int
         result = open_func(self.fd)
         print "open lock", result
-        return result
+        return result == 0
 
     def get_door_status(self):
         for i in range(3):
@@ -69,6 +70,7 @@ class Device(object):
 
 if __name__ == "__main__":
     device = Device()
-    print device.lock_lock()
-    print device.open_lock()
+    print device.door_status.next()
+    # print device.lock_lock()
+    # print device.open_lock()
 
