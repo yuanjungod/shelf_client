@@ -12,33 +12,36 @@ class Light(object):
         self.lib = ctypes.cdll.LoadLibrary("./libled.so")
         self.func = self.lib.LED_Board_init
         self.func.restype = c_int
+        self.open_fd_list = [self.func() for i in range(3)]
+        self.close_fd_list = [[self.func() for i in range(3)]]
+
         print "led init ret:"
 
     def open_light(self, led_id):
         open_func = self.lib.Open_Lights
         open_func.restype = c_int
         self.open_time = time.time()
-        fd = self.func()
-        open_func(fd, led_id)
+        # fd = self.func()
+        open_func(self.open_fd_list[led_id-1], led_id)
 
     def close_light(self, led_id):
         close_func = self.lib.Close_Lights
         close_func.restype = c_bool
-        fd = self.func()
-        close_func(fd, led_id)
+        # fd = self.func()
+        close_func(self.close_fd_list[led_id-1], led_id)
 
     def open_all_light(self):
         self.open_light(1)
-        self.open_light(2)
         self.open_light(3)
+        self.open_light(2)
         self.is_open = True
         self.open_time = time.time()
         time.sleep(1)
 
     def close_all_light(self):
         self.close_light(1)
-        self.close_light(2)
         self.close_light(3)
+        self.close_light(2)
         self.is_open = False
         self.close_time = time.time()
         time.sleep(1)
