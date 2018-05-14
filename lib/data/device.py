@@ -40,7 +40,7 @@ class Device(object):
 
     def lock_lock(self):
         result = self.close_func(self.fd)
-        print "close door", result
+        print "close lock", result
         return result
 
     def open_lock(self):
@@ -69,4 +69,5 @@ class Device(object):
 if __name__ == "__main__":
     device = Device()
     print device.lock_lock()
+    print device.open_lock()
 
