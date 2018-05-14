@@ -46,7 +46,7 @@ class Light(object):
         time.sleep(1)
 
     def auto_check(self):
-        if self.is_open and time.time() - self.open_time > 300:
+        if self.is_open and time.time() - self.open_time > 3000:
             self.close_all_light()
 
 
