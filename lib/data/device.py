@@ -70,7 +70,8 @@ class Device(object):
 
 if __name__ == "__main__":
     device = Device()
-    print device.door_status.next()
+    while True:
+        print device.door_status.next()
     # print device.lock_lock()
     # print device.open_lock()
 
