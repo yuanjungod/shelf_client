@@ -17,8 +17,7 @@ class Device(object):
         self.lock_status = self.get_lock_status1()
         self.close_func = self.lib.close_door
         self.close_func.restype = c_int
-        self.open_func = self.lib.open_door
-        self.open_func.restype = c_int
+
         self.lock_status_func = self.lib.getLockState
         self.lock_status_func.restype = c_bool
         self.door_func_status = self.lib.getDoorState
@@ -44,8 +43,10 @@ class Device(object):
         return result
 
     def open_lock(self):
-        result = self.open_func(self.fd)
-        print "open door", result
+        open_func = self.lib.open_door
+        open_func.restype = c_int
+        result = open_func(self.fd)
+        print "open lock", result
         return result
 
     def get_door_status(self):
