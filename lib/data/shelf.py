@@ -94,7 +94,7 @@ class Shelf(object):
                         self.device.lock_lock()
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageDoorClosed())
-                        self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id, payload=any))
+                        self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
             logging.debug("#############################fuck#############################%s, %s" % (self.is_init, self.in_use))
 
         elif request.payload.type_url.find("MessageRefreshCode") != -1:
