@@ -14,10 +14,10 @@ import datetime
 
 class Camera(object):
 
-    def __init__(self, door, light, aliyun, shelf_current_info, client_config, online=True, camera_count=1):
+    def __init__(self, device, light, aliyun, shelf_current_info, client_config, online=True, camera_count=1):
         self.working = 0
         self._light = light
-        self._door = door
+        self._device = device
         self._camera_count = camera_count
         self._aliyun = aliyun
         self.shelf_current_info = shelf_current_info
@@ -97,12 +97,12 @@ class Camera(object):
                             os.makedirs("images")
                         if not os.path.exists("images/%s" % datetime.date.today()):
                             os.makedirs("images/%s" % datetime.date.today())
-                        cv2.imwrite("image/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
+                        cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
-                            local_path="image/%s/%s.jpg" % (
-                                datetime.date.today(), i)) for i in range(len(frame_list))]))
+                            local_path="images/%s/%s-%s.jpg" % (
+                                datetime.date.today(), time.time(), i)) for i in range(len(frame_list))]))
                     sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                     logging.debug(sense_data)
                     self.return_cmd_queue.put(sense_data)
@@ -111,16 +111,17 @@ class Camera(object):
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorOpened())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-                while self._door.door_status.next():
+                while self._device.door_status.next():
                     frame_list = list()
                     for frame in self.take_photos():
                         frame_list.append(frame)
                         # print(frame.shape)
                     if self.online:
                         self._aliyun.check_account()
+                        photo_time = time.time()
                         self._aliyun.push_batch_image_2_aliyun([
                             "%s/%s-%s/%s.jpg" % (
-                                self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i) for i in range(len(frame_list))],
+                                self._aliyun.account_info.oss_path, self.client_config["device_token"], photo_time, i) for i in range(len(frame_list))],
                             frame_list)
                         any = any_pb2.Any()
                         logging.debug("########asjdsakhcajbkcjahjcajscjascaschashlcaskcklaskck")
@@ -128,32 +129,33 @@ class Camera(object):
                             device_token=self.client_config["device_token"],
                             door_locked=False, images=[device_gateway_pb2.MessageSenseData.Image(
                                 aliyun_oss="%s/%s-%s/%s.jpg" % (
-                                    self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i))
+                                    self._aliyun.account_info.oss_path, self.client_config["device_token"], photo_time, i))
                                 for i in range(len(frame_list))]))
                         self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
                     else:
+                        photo_time = time.time()
                         for i in range(len(frame_list)):
                             if not os.path.exists("images"):
                                 os.makedirs("images")
                             if not os.path.exists("images/%s" % datetime.date.today()):
                                 os.makedirs("images/%s" % datetime.date.today())
-                            cv2.imwrite("image/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
+                            cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), photo_time, i), frame_list[i])
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageSenseData(
                             device_token=self.client_config["device_token"],
                             door_locked=False,
                             images=[device_gateway_pb2.MessageSenseData.Image(
-                                local_path="image/%s/%s.jpg" % (
-                                    datetime.date.today(), i)) for i in range(len(frame_list))]))
+                                local_path="images/%s/%s-%s.jpg" % (
+                                    datetime.date.today(), photo_time, i)) for i in range(len(frame_list))]))
                         sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                         logging.debug(sense_data)
                         self.return_cmd_queue.put(sense_data)
 
-                # try_count = 3
-                # result = self._door.lock_lock()
-                # while result is False and try_count > 0:
-                #     result = self._door.lock_lock()
-                #     try_count -= 1
+                try_count = 3
+                result = self._device.lock_lock()
+                while result is False and try_count > 0:
+                    result = self._device.lock_lock()
+                    try_count -= 1
 
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorClosed())
@@ -164,30 +166,32 @@ class Camera(object):
                     frame_list.append(frame)
                     # print(frame.shape)
                 if self.online:
+                    photo_time = time.time()
                     self._aliyun.check_account()
                     self._aliyun.push_batch_image_2_aliyun([
                         "%s/%s-%s/%s.jpg" % (
-                            self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i) for i in range(len(frame_list))], frame_list)
+                            self._aliyun.account_info.oss_path, self.client_config["device_token"], photo_time, i) for i in range(len(frame_list))], frame_list)
 
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         device_token=self.client_config["device_token"],
                         door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
                             aliyun_oss="%s/%s-%s/%s.jpg" % (
-                                self._aliyun.account_info.oss_path, self.client_config["device_token"], time.time(), i)) for i in range(len(frame_list))]))
+                                self._aliyun.account_info.oss_path, self.client_config["device_token"], photo_time, i)) for i in range(len(frame_list))]))
                     self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
                 else:
+                    photo_time = time.time()
                     for i in range(len(frame_list)):
                         if not os.path.exists("images"):
                             os.makedirs("images")
                         if not os.path.exists("images/%s" % datetime.date.today()):
                             os.makedirs("images/%s" % datetime.date.today())
-                        cv2.imwrite("image/%s/%s-%s.jpg" % (datetime.date.today(), time.time(), i), frame_list[i])
+                        cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), photo_time, i), frame_list[i])
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
-                            local_path="image/%s/%s.jpg" % (
-                                datetime.date.today(), i)) for i in range(len(frame_list))]))
+                            local_path="images/%s/%s-%s.jpg" % (
+                                datetime.date.today(), photo_time, i)) for i in range(len(frame_list))]))
                     sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                     logging.debug(sense_data)
                     self.return_cmd_queue.put(sense_data)
