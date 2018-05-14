@@ -26,7 +26,7 @@ class Camera(object):
         self._camera_instatnce_list = list()
         self._image_remote_save_url = list()
         for i in range(self._camera_count):
-            self._camera_instatnce_list.append(VideoTool.convert_video_2_frame(i))
+            self._camera_instatnce_list.append(VideoTool.convert_video_2_frame(i+2))
         self.return_cmd_queue = Queue.Queue()
         self._image_task_queue = Queue.Queue()
         th = threading.Thread(target=self.internal_frame_thread)
