@@ -24,7 +24,7 @@ class MessageController(object):
 
     def simulation(self):
         any = any_pb2.Any()
-        any.Pack(device_gateway_pb2.MessageCreateDeviceToken(device_token="hehehe"))
+        any.Pack(device_gateway_pb2.MessageRevokeDeviceToken())
         code_used = device_gateway_pb2.StreamMessage(
             id=str(time.time()), payload=any)
 
@@ -37,6 +37,9 @@ class MessageController(object):
             time.sleep(5)
             logging.debug("$$$$$$$$$$$$event$$$$$$$$$$$$$$$$$$$: %s" % type(event))
             self._request_queue.put(event)
+            time.sleep(15)
+            self._request_queue.put(code_used)
+
 
     def process_request(self):
         while True:
