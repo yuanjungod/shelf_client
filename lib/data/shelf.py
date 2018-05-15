@@ -59,34 +59,34 @@ class Shelf(object):
                 if request.id != "":
                     self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
                 logging.debug("check device")
-                if self.check_device():
+                # if self.check_device():
 
-                    self.light.open_all_light()
-                    open_result = self.device.open_lock()
-                    logging.debug("open lock: %s" % open_result)
-                    if not open_result:
-                        if request.id != "":
-                            any = any_pb2.Any()
-                            any.Pack(device_gateway_pb2.MessageDeviceState(lock=3))
-                            self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-                    else:
-                        self.in_use = True
-                        logging.debug("################in use################")
-                        try_count = 5
+                self.light.open_all_light()
+                open_result = self.device.open_lock()
+                logging.debug("open lock: %s" % open_result)
+                if not open_result:
+                    if request.id != "":
+                        any = any_pb2.Any()
+                        any.Pack(device_gateway_pb2.MessageDeviceState(lock=3))
+                        self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
+                else:
+                    self.in_use = True
+                    logging.debug("################in use################")
+                    try_count = 5
+                    door_status = self.device.door_status.next()
+                    while not door_status and try_count > 0:
                         door_status = self.device.door_status.next()
-                        while not door_status and try_count > 0:
-                            door_status = self.device.door_status.next()
-                            try_count -= 1
-                            time.sleep(1)
+                        try_count -= 1
+                        time.sleep(1)
 
-                        if door_status:
-                            self.shelf_display([3, {"open": 1}])
-                            self.camera.push_frames_to_server(request)
-                        else:
-                            self.device.lock_lock()
-                            any = any_pb2.Any()
-                            any.Pack(device_gateway_pb2.MessageDoorClosed())
-                            self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
+                    if door_status:
+                        self.shelf_display([3, {"open": 1}])
+                        self.camera.push_frames_to_server(request)
+                    else:
+                        self.device.lock_lock()
+                        any = any_pb2.Any()
+                        any.Pack(device_gateway_pb2.MessageDoorClosed())
+                        self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
                 logging.debug(
                     "#############################fuck#############################%s, %s" % (self.is_init, self.in_use))
 
@@ -112,7 +112,7 @@ class Shelf(object):
                         self.shelf_display([3, {"open": 1}])
                         self.light.open_all_light()
                         self.camera.push_frames_to_server(request)
-                        self.in_use = True
+                        # self.in_use = True
 
                     self.scan_start = time.time()
                     if request.id != "":
