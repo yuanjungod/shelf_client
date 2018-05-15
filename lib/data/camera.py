@@ -103,7 +103,7 @@ class Camera(object):
                     any.Pack(device_gateway_pb2.MessageSenseData(
                         door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
                             local_path="http://192.168.1.180:8888/images/%s/%s-%s.jpg" % (
-                                datetime.date.today(), time.time(), i)) for i in range(len(frame_list))]))
+                                datetime.date.today(), photo_time, i)) for i in range(len(frame_list))]))
                     sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                     logging.debug(sense_data)
                     self.return_cmd_queue.put(sense_data)
