@@ -14,7 +14,7 @@ import datetime
 
 class Camera(object):
 
-    def __init__(self, device, light, aliyun, shelf_current_info, client_config, online=True, camera_count=1):
+    def __init__(self, device, light, aliyun, shelf_current_info, client_config, online=True, camera_count=3):
         self.working = 0
         self._light = light
         self._device = device
@@ -26,7 +26,7 @@ class Camera(object):
         self._camera_instatnce_list = list()
         self._image_remote_save_url = list()
         for i in range(self._camera_count):
-            self._camera_instatnce_list.append(VideoTool.convert_video_2_frame(i+2))
+            self._camera_instatnce_list.append(VideoTool.convert_video_2_frame(i))
         self.return_cmd_queue = Queue.Queue()
         self._image_task_queue = Queue.Queue()
         th = threading.Thread(target=self.internal_frame_thread)
