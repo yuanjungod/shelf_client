@@ -150,6 +150,7 @@ class MessageController(object):
             if self._shelf.shelf_current_info is not None and \
                     self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
                 self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
+                yield device_gateway_pb2.StreamMessage()
 
             for key, value in self._wait_for_confirm_msg.items():
                 if time.time() - value["timestamp"] > 5:
