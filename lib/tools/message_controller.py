@@ -67,6 +67,7 @@ class MessageController(object):
                     if self._shelf.shelf_current_info is not None and \
                             self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
                         self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
+                        logging.debug("time for AuthorizationRequest")
                     self._shelf.light.auto_check()
                     # for key, value in self._wait_for_confirm_msg.items():
                     #     if time.time() - value["timestamp"] > 20:
@@ -90,9 +91,9 @@ class MessageController(object):
                             self._request_queue.put(response)
                             continue
                         elif str(type(response)).find("AuthorizationRequest") != -1:
+                            logging.debug("qwertyuiop")
                             stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                             authorization_info = stub.Authorization(response)
-                            logging.debug("qwertyuiop")
                             logging.debug("#$$#$#$#$#$#$#$#$#$#$#$###$# %s" % authorization_info.code.code != u"")
                             # logging.info(len(authorization_info.code))
 
