@@ -41,11 +41,11 @@ class MessageController(object):
     def process_request(self):
         while True:
             request = self._request_queue.get()
-            if request == "shelf_init":
-                self._shelf.process_request(request)
-            elif hasattr(request, "reply_to") and request.reply_to != "":
+            if hasattr(request, "reply_to") and request.reply_to != "":
                 if request.reply_to in self._wait_for_confirm_msg:
                     self._wait_for_confirm_msg.pop(request.reply_to)
+            if request == "shelf_init":
+                self._shelf.process_request(request)
             elif str(type(request)).find("AliyunFederationTokenRequest") != -1:
                 stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                 ali_token = stub.AliyunFederationToken(request)

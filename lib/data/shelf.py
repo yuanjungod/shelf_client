@@ -51,14 +51,14 @@ class Shelf(object):
         self.monitor.show(message)
 
     def process_request(self, request):
-        # print dir(request), isinstance(request, device_gateway_pb2.AuthorizationRequest)
+
         if str(type(request)).find("StreamMessage") != -1:
             logging.info("process_request: %s" % request.payload.type_url)
         else:
             logging.info("process_request: %s" % type(request))
+
         if request == "shelf_init":
             if self.in_use is False:
-                # self.in_use = True
                 self.light.open_all_light()
                 self.camera.push_frames_to_server(request)
         elif str(type(request)).find("AuthorizationRequest"):
@@ -70,7 +70,6 @@ class Shelf(object):
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
             logging.debug("check device")
             if self.check_device():
-                # open_result = self.lock.open_lock()
 
                 self.light.open_all_light()
                 open_result = self.device.open_lock()
@@ -79,7 +78,7 @@ class Shelf(object):
                     if request.id != "":
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageDeviceState(lock=3))
-                        self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
+                        self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
                 else:
                     self.in_use = True
                     logging.debug("################in use################")
@@ -106,7 +105,6 @@ class Shelf(object):
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
             self._queue.put(device_gateway_pb2.AuthorizationRequest())
         elif request.payload.type_url.find("MessageCreateDeviceToken") != -1:
-            self.in_use = True
             logging.debug("MessageCreateDeviceToken&*********************************: %s" % request)
             message_code_used = device_gateway_pb2.MessageCreateDeviceToken()
             request.payload.Unpack(message_code_used)
@@ -119,6 +117,7 @@ class Shelf(object):
                 self.shelf_display([
                     4, {"device_token": message_code_used.device_token, "biz_name": message_code_used.biz_name}])
                 if self.in_use is False and self.is_init is True:
+                    self.in_use = True
                     self.shelf_display([3, {"open": 1}])
                     self.light.open_light()
                     self.camera.push_frames_to_server(request)
