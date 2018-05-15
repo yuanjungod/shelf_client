@@ -2,6 +2,7 @@ import time
 import ctypes
 import time
 from ctypes import *
+import logging
 
 
 class Light(object):
@@ -15,7 +16,7 @@ class Light(object):
         # self.open_fd_list = [self.func() for i in range(3)]
         # self.close_fd_list = [self.func() for i in range(3)]
 
-        print "led init ret:"
+        logging.debug("led init ret:")
 
     def open_light(self, led_id):
         open_func = self.lib.Open_Lights

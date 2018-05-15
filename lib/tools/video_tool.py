@@ -2,6 +2,7 @@
 import cv2
 import time
 import json
+import logging
 
 
 class VideoTool(object):
@@ -25,7 +26,7 @@ class VideoTool(object):
         while try_times > 0:
             try_times -= 1
             if not cap.isOpened():
-                print('video can not open')
+                logging.debug('video can not open')
                 time.sleep(1)
                 ret = False
             else:
