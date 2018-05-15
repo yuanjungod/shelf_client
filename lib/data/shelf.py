@@ -51,7 +51,7 @@ class Shelf(object):
         self.monitor.show(message)
 
     def process_request(self, request):
-
+        logging.debug(request)
         if str(type(request)).find("StreamMessage") != -1:
             logging.info("process_request: %s" % request.payload.type_url)
             if request.payload.type_url.find("MessageUnlockDoor") != -1:
