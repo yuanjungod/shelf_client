@@ -136,7 +136,8 @@ class Camera(object):
                 any.Pack(device_gateway_pb2.MessageDoorOpened())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
                 time.sleep(2)
-                while self._device.door_status.next():
+                while not self._device.door_status.next():
+                    logging.debug("door status")
                     frame_list = list()
                     for frame in self.take_photos():
                         frame_list.append(frame)
