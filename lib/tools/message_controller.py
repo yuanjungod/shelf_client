@@ -68,6 +68,7 @@ class MessageController(object):
                     for key, value in self._wait_for_confirm_msg.items():
                         if time.time() - value["timestamp"] > 5:
                             self._wait_for_confirm_msg[key]["timestamp"] = time.time()
+                            logging.debug(value["response"])
                             yield value["response"]
                     self._shelf.light.auto_check()
                     time.sleep(0.5)
