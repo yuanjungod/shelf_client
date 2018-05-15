@@ -92,7 +92,7 @@ class MessageController(object):
                             continue
                         elif str(type(response)).find("AuthorizationRequest") != -1:
                             logging.debug("qwertyuiop")
-                            stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
+                            stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel, timeout=3)
                             authorization_info = stub.Authorization(response)
                             logging.debug("Authorization end %s" % authorization_info)
                             logging.debug("#$$#$#$#$#$#$#$#$#$#$#$###$# %s" % authorization_info.code.code != u"")
