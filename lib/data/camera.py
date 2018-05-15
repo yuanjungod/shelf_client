@@ -59,19 +59,19 @@ class Camera(object):
 
     def assemble_pic(self, frame_list):
         shape = frame_list[0].shape
-        new1 = np.zeros(shape=(shape[0] * 2, shape[1] * 2))
+        new1 = np.zeros(shape=(shape[0] * 2, shape[1] * 2, 3))
         for i in range(4):
             new1[(i / 2)*shape[0]: (i / 2)*shape[0]+shape[0], (i % 2)*shape[1]: (i % 2)*shape[1]+shape[1]] = frame_list[i]
 
-        new2 = np.zeros(shape=(shape[0], shape[1] * 2))
+        new2 = np.zeros(shape=(shape[0], shape[1] * 2, 3))
         for i in range(4, 6, 1):
             new2[0: shape[0], (i-4) * shape[1]: (i-4) * shape[1] + shape[1]] = frame_list[i]
 
-        new3 = np.zeros(shape=(shape[0], shape[1] * 2))
+        new3 = np.zeros(shape=(shape[0], shape[1] * 2, 3))
         for i in range(6, 8, 1):
             new3[0: shape[0], (i - 6) * shape[1]: (i - 6) * shape[1] + shape[1]] = frame_list[i]
 
-        new4 = np.zeros(shape=(shape[0], shape[1] * 2))
+        new4 = np.zeros(shape=(shape[0], shape[1] * 2, 3))
         for i in range(8, 10, 1):
             new4[0: shape[0], (i - 8) * shape[1]: (i - 8) * shape[1] + shape[1]] = frame_list[i]
 
