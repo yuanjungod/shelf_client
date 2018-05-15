@@ -68,10 +68,13 @@ class Shelf(object):
             logging.debug("MessageUnlockDoor")
             if request.id != "":
                 self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
+            logging.debug("check device")
             if self.check_device():
                 # open_result = self.lock.open_lock()
+
                 self.light.open_all_light()
                 open_result = self.device.open_lock()
+                logging.debug("open lock: %s" % open_result)
                 if not open_result:
                     if request.id != "":
                         any = any_pb2.Any()
@@ -79,7 +82,7 @@ class Shelf(object):
                         self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
                 else:
                     self.in_use = True
-                    logging.debug("in use")
+                    logging.debug("################in use################")
                     try_count = 5
                     door_status = self.device.door_status.next()
                     while not door_status and try_count > 0:
