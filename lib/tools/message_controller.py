@@ -166,7 +166,7 @@ class MessageController(object):
 
         for request in stub.Stream(response_iterator):
             # logging.info(type(request))
-            # logging.info(request)
+            logging.info(request)
             self._request_queue.put(request)
 
     def run(self):
