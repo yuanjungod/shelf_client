@@ -116,6 +116,7 @@ class Camera(object):
                     frame_list = list()
                     for frame in self.take_photos():
                         frame_list.append(frame)
+                        time.sleep(1)
                     if self.online:
                         self._aliyun.check_account()
                         photo_time = time.time()
