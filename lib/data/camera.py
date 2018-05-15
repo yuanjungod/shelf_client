@@ -131,7 +131,7 @@ class Camera(object):
                     sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                     logging.debug(sense_data)
                     self.return_cmd_queue.put(sense_data)
-
+                    logging.debug("init finish")
             else:
                 logging.debug("#################begin#############")
                 any = any_pb2.Any()
@@ -232,6 +232,7 @@ class Camera(object):
                     sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                     logging.debug(sense_data)
                     self.return_cmd_queue.put(sense_data)
+                logging.debug("came finish")
 
     def push_frames_to_server(self, request):
         logging.debug("push_frames_to_server: %s" % request)
