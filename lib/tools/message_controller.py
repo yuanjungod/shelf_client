@@ -54,6 +54,7 @@ class MessageController(object):
                 ali_token = stub.AliyunFederationToken(request)
                 self._shelf.aliyun.set_aliyun(ali_token)
             else:
+                logging.debug("shelf process %s" % request)
                 self._shelf.process_request(request)
 
     def create_response_iterator(self):
