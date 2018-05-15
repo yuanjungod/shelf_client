@@ -42,7 +42,7 @@ class Device(object):
         close_func = self.lib.close_door
         close_func.restype = c_int
         result = close_func(self.fd)
-        print "close lock", result
+        print "close lock", result == 0
         return result == 0
 
     def open_lock(self):
