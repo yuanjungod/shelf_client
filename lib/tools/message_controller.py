@@ -74,6 +74,7 @@ class MessageController(object):
                     continue
                 else:
                     response = self._response_queue.get(timeout=0.5)
+                    logging.debug(response)
 
                 if str(type(response)).find("StreamMessage") == -1:
                     logging.info("create_response_iterator: %s" % type(response))
@@ -147,15 +148,15 @@ class MessageController(object):
             except:
                 logging.error(traceback.format_exc())
 
-            if self._shelf.shelf_current_info is not None and \
-                    self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
-                self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
-                yield device_gateway_pb2.StreamMessage()
-
-            for key, value in self._wait_for_confirm_msg.items():
-                if time.time() - value["timestamp"] > 5:
-                    self._wait_for_confirm_msg[key]["timestamp"] = time.time()
-                    yield value["response"]
+            # if self._shelf.shelf_current_info is not None and \
+            #         self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
+            #     self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
+            #     yield device_gateway_pb2.StreamMessage()
+            #
+            # for key, value in self._wait_for_confirm_msg.items():
+            #     if time.time() - value["timestamp"] > 5:
+            #         self._wait_for_confirm_msg[key]["timestamp"] = time.time()
+            #         yield value["response"]
 
     def stream_start(self):
         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
