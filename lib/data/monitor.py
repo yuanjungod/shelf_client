@@ -19,7 +19,6 @@ class Monitor(object):
         return True
 
     def show(self, message):
-        logging.debug(message)
         logging.info(message)
         self.init()
         self.show_socket.sendall(json.dumps(message))

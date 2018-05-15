@@ -72,13 +72,13 @@ class Shelf(object):
                 else:
                     self.in_use = True
                     logging.debug("################in use################")
-                    try_count = 5
+                    try_count = 8
                     door_status = self.device.door_status.next()
                     while not door_status and try_count > 0:
                         door_status = self.device.door_status.next()
+                        logging.debug("door_status: %s" % door_status)
                         try_count -= 1
-                        time.sleep(1)
-
+                    time.sleep(1)
                     if door_status:
                         self.shelf_display([3, {"open": 1}])
                         self.camera.push_frames_to_server(request)
