@@ -67,11 +67,11 @@ class MessageController(object):
                             self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
                         self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
                     self._shelf.light.auto_check()
-                    for key, value in self._wait_for_confirm_msg.items():
-                        if time.time() - value["timestamp"] > 20:
-                            self._wait_for_confirm_msg[key]["timestamp"] = time.time()
-                            logging.debug(value["response"])
-                            yield value["response"]
+                    # for key, value in self._wait_for_confirm_msg.items():
+                    #     if time.time() - value["timestamp"] > 20:
+                    #         self._wait_for_confirm_msg[key]["timestamp"] = time.time()
+                    #         logging.debug(value["response"])
+                    #         yield value["response"]
                 else:
                     response = self._response_queue.get(timeout=0.5)
                     logging.debug(response)
