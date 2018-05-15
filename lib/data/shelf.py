@@ -79,16 +79,17 @@ class Shelf(object):
                         logging.debug("door_status: %s" % door_status)
                         try_count -= 1
                     time.sleep(1)
+                    self.camera.push_frames_to_server(request)
                     if door_status:
                         self.shelf_display([3, {"open": 1}])
-                        self.camera.push_frames_to_server(request)
-                    else:
-                        logging.debug("################door closed################")
-                        self.device.lock_lock()
-                        any = any_pb2.Any()
-                        any.Pack(device_gateway_pb2.MessageDoorClosed())
-                        self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-                        self.in_use = False
+
+                    # else:
+                    #     logging.debug("################door closed################")
+                    #     self.device.lock_lock()
+                    #     any = any_pb2.Any()
+                    #     any.Pack(device_gateway_pb2.MessageDoorClosed())
+                    #     self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
+                    #     self.in_use = False
                 logging.debug(
                     "#############################fuck#############################%s, %s" % (self.is_init, self.in_use))
 
