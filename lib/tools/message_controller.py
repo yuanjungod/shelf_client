@@ -94,6 +94,7 @@ class MessageController(object):
                             logging.debug("qwertyuiop")
                             stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                             authorization_info = stub.Authorization(response)
+                            logging.debug("Authorization end %s" % authorization_info)
                             logging.debug("#$$#$#$#$#$#$#$#$#$#$#$###$# %s" % authorization_info.code.code != u"")
                             # logging.info(len(authorization_info.code))
 
