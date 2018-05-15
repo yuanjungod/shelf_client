@@ -91,7 +91,7 @@ class Camera(object):
             self.working = 0
             logging.debug("internal_frame_thread")
             request = self._image_task_queue.get()
-            logging.debug("internal_frame_thread start")
+            logging.debug("internal_frame_thread start %s" % request)
             self.working = 1
             if request == "shelf_init":
                 frame_list = list()
@@ -133,6 +133,7 @@ class Camera(object):
                     self.return_cmd_queue.put(sense_data)
 
             else:
+                logging.debug("#################begin#############")
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorOpened())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
