@@ -92,7 +92,7 @@ class Camera(object):
             logging.debug("internal_frame_thread#$#$#$#$#$#$#$#$#$#")
             if self._image_task_queue.empty():
                 logging.debug("self._image_task_queue is empty")
-                time.sleep(1)
+                time.sleep(5)
                 continue
             request = self._image_task_queue.get()
             logging.debug("internal_frame_thread start %s" % request)
