@@ -132,6 +132,7 @@ class MessageController(object):
                             message_sense_data = device_gateway_pb2.MessageSenseData()
                             response.payload.Unpack(message_sense_data)
                             if message_sense_data.door_locked is True and self._shelf.camera.working == 0:
+                                self._shelf.in_use = False
                                 self.client_config["device_token"] = ""
                                 if self._shelf.can_serve is False:
                                     self._shelf.can_serve = True
