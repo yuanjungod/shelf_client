@@ -10,6 +10,7 @@ import logging
 import cv2
 import os
 import datetime
+import numpy as np
 
 
 class Camera(object):
@@ -56,6 +57,26 @@ class Camera(object):
                 except:
                     yield None
 
+    def assemble_pic(self, frame_list):
+        shape = frame_list[0].shape
+        new1 = np.zeros(shape=(shape[0] * 2, shape[1] * 2))
+        for i in range(4):
+            new1[(i / 2)*shape[0]: (i / 2)*shape[0]+shape[0], (i % 2)*shape[1]: (i % 2)*shape[1]+shape[1]] = frame_list[i]
+
+        new2 = np.zeros(shape=(shape[0], shape[1] * 2))
+        for i in range(4, 6, 1):
+            new2[0: shape[0], (i-4) * shape[1]: (i-4) * shape[1] + shape[1]] = frame_list[i]
+
+        new3 = np.zeros(shape=(shape[0], shape[1] * 2))
+        for i in range(6, 8, 1):
+            new3[0: shape[0], (i - 6) * shape[1]: (i - 6) * shape[1] + shape[1]] = frame_list[i]
+
+        new4 = np.zeros(shape=(shape[0], shape[1] * 2))
+        for i in range(8, 10, 1):
+            new4[0: shape[0], (i - 8) * shape[1]: (i - 8) * shape[1] + shape[1]] = frame_list[i]
+
+        return [new1, new2, new3, new4]
+
     def get_camera_status(self):
         status = True
         for i in self._camera_instatnce_list:
@@ -75,6 +96,7 @@ class Camera(object):
                 for frame in self.take_photos():
                     frame_list.append(frame)
                     print(frame.shape)
+                frame_list = self.assemble_pic(frame_list)
                 if self.online:
                     self._aliyun.check_account()
                     # print ["%s/test/%s.jpg" % ("123", i) for i in range(len(frame_list))]
@@ -117,6 +139,7 @@ class Camera(object):
                     for frame in self.take_photos():
                         frame_list.append(frame)
                         time.sleep(1)
+                    frame_list = self.assemble_pic(frame_list)
                     if self.online:
                         self._aliyun.check_account()
                         photo_time = time.time()
@@ -169,6 +192,7 @@ class Camera(object):
                 frame_list = list()
                 for frame in self.take_photos():
                     frame_list.append(frame)
+                frame_list = self.assemble_pic(frame_list)
                 if self.online:
                     photo_time = time.time()
                     self._aliyun.check_account()
