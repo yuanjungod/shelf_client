@@ -159,7 +159,7 @@ class Camera(object):
                     try_count -= 1
 
                 logging.debug("sleeping!sleeping!sleeping!sleeping!sleeping!")
-                time.sleep(2)
+                time.sleep(1)
 
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorClosed())

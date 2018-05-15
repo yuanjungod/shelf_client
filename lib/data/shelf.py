@@ -124,7 +124,6 @@ class Shelf(object):
                     self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
                 logging.debug(type(device_gateway_pb2.AuthorizationRequest()))
                 self._queue.put(device_gateway_pb2.AuthorizationRequest())
-
         elif request == "shelf_init":
             if self.in_use is False:
                 self.light.open_all_light()
