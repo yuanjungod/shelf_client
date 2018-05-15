@@ -60,9 +60,9 @@ class Shelf(object):
                     self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
                 logging.debug("check device")
                 # if self.check_device():
-
-                self.light.open_all_light()
                 open_result = self.device.open_lock()
+                self.light.open_all_light()
+
                 logging.debug("open lock: %s" % open_result)
                 if not open_result:
                     if request.id != "":
