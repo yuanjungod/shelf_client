@@ -154,6 +154,7 @@ class Camera(object):
                 try_count = 3
                 result = self._device.lock_lock()
                 while result is False and try_count > 0:
+                    time.sleep(1)
                     result = self._device.lock_lock()
                     try_count -= 1
 
