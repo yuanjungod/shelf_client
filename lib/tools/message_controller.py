@@ -40,7 +40,6 @@ class MessageController(object):
             time.sleep(15)
             self._request_queue.put(code_used)
 
-
     def process_request(self):
         while True:
             request = self._request_queue.get()
@@ -76,7 +75,10 @@ class MessageController(object):
                 else:
                     response = self._response_queue.get(timeout=0.5)
 
-                logging.info("create_response_iterator: %s" % type(response))
+                if str(type(response)).find("StreamMessage") == -1:
+                    logging.info("create_response_iterator: %s" % type(response))
+                else:
+                    logging.info(response.payload.type_url)
 
                 if response == "shelf_init" or str(type(response)).find("StreamMessage") == -1:
                     print "fuck you!!!!"
