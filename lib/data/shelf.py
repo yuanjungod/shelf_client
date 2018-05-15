@@ -1,7 +1,7 @@
 from camera import Camera
 from device import Device
 from light import Light
-from lock import Lock
+# from lock import Lock
 from lib import device_gateway_pb2
 from monitor import Monitor
 from lib.tools.aliyun import Aliyun
@@ -33,7 +33,7 @@ class Shelf(object):
     def init(self):
         self.device = Device()
         self.light = Light()
-        self.lock = Lock()
+        # self.lock = Lock()
 
         self.monitor = Monitor("localhost", 9999)
         # self.monitor.init()
