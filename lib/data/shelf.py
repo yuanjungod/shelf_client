@@ -132,6 +132,7 @@ class Shelf(object):
         elif request == "shelf_init":
             if self.in_use is False:
                 self.light.open_all_light()
+                open_result = self.device.lock_lock()
                 self.camera.push_frames_to_server(request)
         elif str(type(request)).find("AuthorizationRequest") != -1:
             logging.debug("AuthorizationRequest")
