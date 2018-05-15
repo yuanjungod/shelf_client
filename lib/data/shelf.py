@@ -83,10 +83,12 @@ class Shelf(object):
                         self.shelf_display([3, {"open": 1}])
                         self.camera.push_frames_to_server(request)
                     else:
+                        logging.debug("################door closed################")
                         self.device.lock_lock()
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageDoorClosed())
                         self._queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
+                        self.in_use = False
                 logging.debug(
                     "#############################fuck#############################%s, %s" % (self.is_init, self.in_use))
 
