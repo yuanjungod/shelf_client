@@ -37,8 +37,8 @@ class MessageController(object):
             time.sleep(5)
             logging.debug("$$$$$$$$$$$$event$$$$$$$$$$$$$$$$$$$: %s" % type(event))
             self._request_queue.put(event)
-            time.sleep(30)
-            self._request_queue.put(code_used)
+            # time.sleep(30)
+            # self._request_queue.put(code_used)
 
     def process_request(self):
         while True:
