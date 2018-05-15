@@ -133,6 +133,7 @@ class Camera(object):
                     self.return_cmd_queue.put(sense_data)
 
             else:
+                logging.debug("#################begin#############")
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorOpened())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
