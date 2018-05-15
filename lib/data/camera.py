@@ -95,12 +95,12 @@ class Camera(object):
                 frame_list = list()
                 for frame in self.take_photos():
                     frame_list.append(frame)
-                    print(frame.shape)
+                    logging.debug(frame.shape)
                 frame_list = self.assemble_pic(frame_list)
                 if self.online:
                     self._aliyun.check_account()
                     # print ["%s/test/%s.jpg" % ("123", i) for i in range(len(frame_list))]
-                    print "*************************", self._aliyun.account_info.oss_path
+                    logging.debug(self._aliyun.account_info.oss_path)
                     self._aliyun.push_batch_image_2_aliyun([
                         "%s/test/%s.jpg" % (self._aliyun.account_info.oss_path, i) for i in range(len(frame_list))], frame_list)
 

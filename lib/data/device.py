@@ -10,7 +10,7 @@ class Device(object):
         self.lib = ctypes.cdll.LoadLibrary("./liblock.so")
         self.func = self.lib.lock_init
         self.func.restype = c_int
-        print "lock init ret:"
+        logging.debug("lock init ret:")
         self.fd = self.func()
         logging.debug(self.fd)
         self.door_status = self.get_door_status1()
@@ -26,7 +26,7 @@ class Device(object):
         # open: True, close: False
         while True:
             result = self.door_func_status(self.fd)
-            print "Door Status:", result
+            logging.debug("Door Status: %s" % result)
             yield result
             time.sleep(1)
 
@@ -34,7 +34,7 @@ class Device(object):
         # open: True, close: False
         while True:
             result = self.lock_status_func(self.fd)
-            print "Lock Status:", result
+            logging.debug("Lock Status: %s" % result)
             yield result
             time.sleep(1)
 
@@ -42,14 +42,14 @@ class Device(object):
         close_func = self.lib.close_door
         close_func.restype = c_int
         result = close_func(self.fd)
-        print "close lock", result == 0
+        logging.debug("close lock: %s" % result == 0)
         return result == 0
 
     def open_lock(self):
         open_func = self.lib.open_door
         open_func.restype = c_int
         result = open_func(self.fd)
-        print "open lock", result == 0
+        logging.debug("open lock: %s" % result == 0)
         return result == 0
 
     def get_door_status(self):

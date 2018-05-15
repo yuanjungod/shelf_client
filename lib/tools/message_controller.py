@@ -81,28 +81,28 @@ class MessageController(object):
                     logging.info(response.payload.type_url)
 
                 if response == "shelf_init" or str(type(response)).find("StreamMessage") == -1:
-                    print "fuck you!!!!"
+                    logging.debug("fuck you!!!!")
                     # print response.SerializeToString(), type(response.SerializeToString())
                     if response == "shelf_init":
-                        print "ASDFGGGGGGGGGGGGGGGGGG"
+                        logging.debug("ASDFGGGGGGGGGGGGGGGGGG")
                         self._request_queue.put(response)
                         continue 
                     elif str(type(response)).find("AuthorizationRequest") != -1:
                         stub = device_gateway_pb2_grpc.DeviceGatewayStub(self._channel)
                         authorization_info = stub.Authorization(response)
-                        print "qwertyuiop"
-                        print "#$$#$#$#$#$#$#$#$#$#$#$###$#", authorization_info.code.code != u""
+                        logging.debug("qwertyuiop")
+                        logging.debug("#$$#$#$#$#$#$#$#$#$#$#$###$#", authorization_info.code.code != u"")
                         # logging.info(len(authorization_info.code))
 
                         if authorization_info.code.code != "":
-                            print "authorization_info"
+                            logging.debug("authorization_info")
                             self._shelf.shelf_current_info = {
                                 "code": authorization_info.code.code, "qr_code": authorization_info.code.qr_code,
                                 "expires_in": authorization_info.code.expires_in, "shelf_id": authorization_info.shelf_id,
                                 "shelf_code": authorization_info.shelf_code, "shelf_name": authorization_info.shelf_name,
                                 "service_phone": authorization_info.service_phone, "success": True,
                                 "expires_time": time.time()+authorization_info.code.expires_in}
-                            print "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&", self._shelf.shelf_current_info
+                            logging.debug("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&", self._shelf.shelf_current_info)
                             self._shelf.shelf_display([6, self._shelf.shelf_current_info])
                         else:
                             logging.info("authorization_info: %s" % authorization_info.token.device_token)
