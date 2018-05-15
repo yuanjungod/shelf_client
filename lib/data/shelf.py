@@ -124,8 +124,7 @@ class Shelf(object):
                     self._queue.put(device_gateway_pb2.StreamMessage(reply_to=request.id))
                 logging.debug(type(device_gateway_pb2.AuthorizationRequest()))
                 self._queue.put(device_gateway_pb2.AuthorizationRequest())
-            else:
-                logging.info("process_request: %s" % type(request))
+
         elif request == "shelf_init":
             if self.in_use is False:
                 self.light.open_all_light()
@@ -133,6 +132,8 @@ class Shelf(object):
         elif str(type(request)).find("AuthorizationRequest") != -1:
             logging.debug("AuthorizationRequest")
             self._queue.put(request)
+        else:
+            logging.info("process_request: %s" % type(request))
 
 
 
