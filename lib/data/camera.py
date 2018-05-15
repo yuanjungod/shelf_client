@@ -157,6 +157,9 @@ class Camera(object):
                     result = self._device.lock_lock()
                     try_count -= 1
 
+                logging.debug("sleeping!sleeping!sleeping!sleeping!sleeping!")
+                time.sleep(2)
+
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorClosed())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
@@ -181,6 +184,7 @@ class Camera(object):
                             for i in range(len(frame_list))]))
                     self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
                 else:
+                    logging.debug("door closeing image")
                     photo_time = time.time()
                     for i in range(len(frame_list)):
                         if not os.path.exists("images"):
