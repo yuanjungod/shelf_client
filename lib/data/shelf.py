@@ -107,12 +107,12 @@ class Shelf(object):
                         json.dump(self.client_config, f)
                     self.shelf_display([
                         4, {"device_token": message_code_used.device_token, "biz_name": message_code_used.biz_name}])
-                    if self.in_use is False and self.is_init is True:
-                        self.in_use = True
-                        self.shelf_display([3, {"open": 1}])
-                        self.light.open_all_light()
-                        self.camera.push_frames_to_server(request)
-                        self.in_use = True
+                    # if self.in_use is False and self.is_init is True:
+                    #     self.in_use = True
+                    self.shelf_display([3, {"open": 1}])
+                    self.light.open_all_light()
+                    self.camera.push_frames_to_server(request)
+                    # self.in_use = True
 
                     self.scan_start = time.time()
                     if request.id != "":
