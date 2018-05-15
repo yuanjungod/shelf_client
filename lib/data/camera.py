@@ -91,6 +91,7 @@ class Camera(object):
             self.working = 0
             logging.debug("internal_frame_thread")
             request = self._image_task_queue.get()
+            logging.debug("internal_frame_thread start")
             self.working = 1
             if request == "shelf_init":
                 frame_list = list()
