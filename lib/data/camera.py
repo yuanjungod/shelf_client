@@ -135,7 +135,9 @@ class Camera(object):
                 any = any_pb2.Any()
                 any.Pack(device_gateway_pb2.MessageDoorOpened())
                 self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-                while self._device.door_status.next():
+                time.sleep(2)
+                while not self._device.door_status.next():
+                    logging.debug("#################door status#############")
                     frame_list = list()
                     for frame in self.take_photos():
                         frame_list.append(frame)
@@ -178,10 +180,10 @@ class Camera(object):
 
                 try_count = 3
                 result = self._device.lock_lock()
-                while result is False and try_count > 0:
-                    time.sleep(1)
-                    result = self._device.lock_lock()
-                    try_count -= 1
+                # while result is False and try_count > 0:
+                #     time.sleep(1)
+                #     result = self._device.lock_lock()
+                #     try_count -= 1
 
                 logging.debug("sleeping!sleeping!sleeping!sleeping!sleeping!")
                 time.sleep(1)
