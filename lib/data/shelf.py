@@ -114,7 +114,7 @@ class Shelf(object):
                         self.in_use = True
                         self.shelf_display([3, {"open": 1}])
                         self.light.open_all_light()
-                        self.camera.push_frames_to_server(request)
+                        # self.camera.push_frames_to_server(request)
                         # self.in_use = True
 
                     self.scan_start = time.time()
