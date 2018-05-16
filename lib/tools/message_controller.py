@@ -67,6 +67,7 @@ class MessageController(object):
                     if self._shelf.shelf_current_info is not None and \
                             self._shelf.shelf_current_info["expires_time"] < time.time() and self._shelf.in_use is False:
                         self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
+                        self._response_queue.put(device_gateway_pb2.StreamMessage())
                         logging.debug("time for AuthorizationRequest")
                     self._shelf.light.auto_check()
                     # for key, value in self._wait_for_confirm_msg.items():
