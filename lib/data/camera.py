@@ -42,6 +42,10 @@ class Camera(object):
             for i in self._camera_instatnce_list:
                 try:
                     i.next()
+                except:
+                    pass
+            for i in self._camera_instatnce_list:
+                try:
                     yield i.next()
                 except:
                     pass
@@ -51,6 +55,10 @@ class Camera(object):
             for i in self._camera_instatnce_list:
                 try:
                     i.next()
+                except:
+                    pass
+            for i in self._camera_instatnce_list:
+                try:
                     yield i.next()
                 except:
                     pass
