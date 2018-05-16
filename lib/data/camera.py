@@ -147,13 +147,13 @@ class Camera(object):
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageDoorOpened())
                     self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-                    time.sleep(2)
+                    time.sleep(1)
                     while self._device.door_status.next():
                         logging.debug("#################door status#############")
                         frame_list = list()
                         for frame in self.take_photos():
                             frame_list.append(frame)
-                        time.sleep(1)
+                        # time.sleep(1)
                         frame_list = self.assemble_pic(frame_list)
                         if self.online:
                             self._aliyun.check_account()
