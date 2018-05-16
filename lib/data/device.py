@@ -28,7 +28,7 @@ class Device(object):
             result = self.door_func_status(self.fd)
             logging.debug("Door Status: %s" % result)
             yield result
-            time.sleep(0.5)
+            # time.sleep(0.5)
 
     def get_lock_status1(self):
         # open: True, close: False
