@@ -102,7 +102,7 @@ class Camera(object):
                 self.working = 0
                 logging.debug("internal_frame_thread#$#$#$#$#$#$#$#$#$#")
                 if self._image_task_queue.empty():
-                    # logging.debug("self._image_task_queue is empty")
+                    logging.debug("self._image_task_queue is empty")
                     time.sleep(1)
                     continue
                 request = self._image_task_queue.get()
@@ -152,7 +152,7 @@ class Camera(object):
                     any = any_pb2.Any()
                     any.Pack(device_gateway_pb2.MessageDoorOpened())
                     self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
-                    time.sleep(1)
+                    # time.sleep(1)
                     while self._device.door_status.next():
                         logging.debug("#################door status#############")
                         frame_list = list()
@@ -195,9 +195,9 @@ class Camera(object):
                             logging.debug(sense_data)
                             self.return_cmd_queue.put(sense_data)
 
-                    try_count = 3
+                    # try_count = 3
                     logging.debug("######fucking lock lock######")
-                    result = self._device.lock_lock()
+                    self._device.lock_lock()
                     logging.debug("&&&&&&&&&&&fucking lock lock&&&&&&&&&&&")
                     # while result is False and try_count > 0:
                     #     time.sleep(1)
