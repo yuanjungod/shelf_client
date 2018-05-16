@@ -41,11 +41,16 @@ class Camera(object):
         if self._light.is_open:
             for i in self._camera_instatnce_list:
                 try:
+                    i.next()
+                except:
+                    pass
+            for i in self._camera_instatnce_list:
+                try:
                     yield i.next()
                 except:
-                    yield None
+                    pass
         else:
-            self._light.open_light()
+            self._light.open_all_light()
             time.sleep(2)
             for i in self._camera_instatnce_list:
                 try:
@@ -56,7 +61,7 @@ class Camera(object):
                 try:
                     yield i.next()
                 except:
-                    yield None
+                    pass
 
     def assemble_pic(self, frame_list):
         shape = frame_list[0].shape
@@ -97,8 +102,8 @@ class Camera(object):
                 self.working = 0
                 logging.debug("internal_frame_thread#$#$#$#$#$#$#$#$#$#")
                 if self._image_task_queue.empty():
-                    logging.debug("self._image_task_queue is empty")
-                    time.sleep(3)
+                    # logging.debug("self._image_task_queue is empty")
+                    time.sleep(1)
                     continue
                 request = self._image_task_queue.get()
                 logging.debug("internal_frame_thread start %s" % request)
