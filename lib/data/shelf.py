@@ -78,6 +78,7 @@ class Shelf(object):
                         door_status = self.device.door_status.next()
                         logging.debug("door_status: %s" % door_status)
                         try_count -= 1
+                        time.sleep(1)
                     time.sleep(1)
                     self.camera.push_frames_to_server(request)
                     if door_status:
