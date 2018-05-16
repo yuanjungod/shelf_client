@@ -100,9 +100,9 @@ class Camera(object):
         try:
             while True:
                 self.working = 0
-                logging.debug("internal_frame_thread#$#$#$#$#$#$#$#$#$#")
+                # logging.debug("internal_frame_thread#$#$#$#$#$#$#$#$#$#")
                 if self._image_task_queue.empty():
-                    logging.debug("self._image_task_queue is empty")
+                    # logging.debug("self._image_task_queue is empty")
                     time.sleep(1)
                     continue
                 request = self._image_task_queue.get()
