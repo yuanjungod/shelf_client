@@ -69,7 +69,8 @@ class MessageController(object):
                         self._response_queue.put(device_gateway_pb2.AuthorizationRequest())
                         self._response_queue.put(device_gateway_pb2.StreamMessage())
                         logging.debug("time for AuthorizationRequest")
-                    self._shelf.light.auto_check()
+                    if self._shelf.in_use is False and self._shelf.camera.working == 0:
+                        self._shelf.light.auto_check()
                     # for key, value in self._wait_for_confirm_msg.items():
                     #     if time.time() - value["timestamp"] > 20:
                     #         self._wait_for_confirm_msg[key]["timestamp"] = time.time()
