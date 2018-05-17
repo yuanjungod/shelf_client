@@ -20,6 +20,7 @@ class MessageController(object):
         self._wait_for_confirm_msg = dict()
         self.scan_start = None
         self.online = online
+        self.revoke = False
         threading.Thread(target=self.simulation).start()
 
     def simulation(self):
@@ -34,7 +35,7 @@ class MessageController(object):
             id=str(time.time()), payload=any)
         event_list = [device_gateway_pb2.AuthorizationRequest()]
         for event in event_list:
-            time.sleep(5)
+            time.sleep(20)
             logging.debug("$$$$$$$$$$$$event$$$$$$$$$$$$$$$$$$$: %s" % type(event))
             self._request_queue.put(event)
             # time.sleep(30)
@@ -93,6 +94,7 @@ class MessageController(object):
                                 "shelf_code": authorization_info.shelf_code, "shelf_name": authorization_info.shelf_name,
                                 "service_phone": authorization_info.service_phone, "success": True,
                                 "expires_time": time.time()+authorization_info.code.expires_in}
+                            self.revoke = False
                             logging.debug("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&", self._shelf.shelf_current_info)
                             self._shelf.shelf_display([6, self._shelf.shelf_current_info])
                         else:
@@ -100,8 +102,10 @@ class MessageController(object):
                             self.client_config["device_token"] = authorization_info.token.device_token
                             with open("config.json", "w") as f:
                                 json.dump(self.client_config, f)
-                            if self._shelf.in_use is False and self._shelf.camera.working == 0:
+                            if self._shelf.in_use is False and self._shelf.camera.working == 0 and self.revoke is False:
+                                self.revoke = True
                                 logging.debug("for : %s" % self.client_config["device_token"])
+                                self._shelf.in_use = True
                                 self._shelf.camera.push_frames_to_server(authorization_info)
 
                             # self._shelf.shelf_display([
