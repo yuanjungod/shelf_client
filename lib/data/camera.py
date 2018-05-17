@@ -116,7 +116,9 @@ class Camera(object):
                     for frame in self.take_photos():
                         frame_list.append(frame)
                         logging.debug(frame.shape)
+                    logging.debug("take photo123")
                     frame_list = self.assemble_pic(frame_list)
+                    logging.debug("take photo456")
                     if self.online:
                         self._aliyun.check_account()
                         # print ["%s/test/%s.jpg" % ("123", i) for i in range(len(frame_list))]
@@ -139,8 +141,10 @@ class Camera(object):
                         if not os.path.exists("images/%s" % datetime.date.today()):
                             os.makedirs("images/%s" % datetime.date.today())
                         photo_time = time.time()
+                        logging.debug("fuck save photo")
                         for i in range(len(frame_list)):
                             cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), photo_time, i), frame_list[i])
+                        logging.debug("take photo7890")
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageSenseData(
                             door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
