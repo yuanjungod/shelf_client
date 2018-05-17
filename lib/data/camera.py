@@ -109,6 +109,17 @@ class Camera(object):
                     time.sleep(1)
                     continue
                 request = self._image_task_queue.get()
+
+                if not self.online:
+                    if not os.path.exists("images"):
+                        os.makedirs("images")
+                    if not os.path.exists("images/%s" % datetime.date.today()):
+                        os.makedirs("images/%s" % datetime.date.today())
+                    image_files = os.listdir("images/%s/" % datetime.date.today())
+                    if len(image_files) > 1000:
+                        for i in image_files[0: 500]:
+                            os.remove("images/%s/%s" % (datetime.date.today(), i))
+
                 logging.debug("internal_frame_thread start %s" % request)
                 self.working = 1
                 if request == "shelf_init":
@@ -137,10 +148,6 @@ class Camera(object):
                         self.return_cmd_queue.put(sense_data)
                         logging.debug("init finish")
                     else:
-                        if not os.path.exists("images"):
-                            os.makedirs("images")
-                        if not os.path.exists("images/%s" % datetime.date.today()):
-                            os.makedirs("images/%s" % datetime.date.today())
                         photo_time = time.time()
                         logging.debug("fuck save photo")
                         for i in range(len(frame_list)):
@@ -188,10 +195,6 @@ class Camera(object):
                             self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
                         else:
                             photo_time = time.time()
-                            if not os.path.exists("images"):
-                                os.makedirs("images")
-                            if not os.path.exists("images/%s" % datetime.date.today()):
-                                os.makedirs("images/%s" % datetime.date.today())
                             for i in range(len(frame_list)):
                                 cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), photo_time, i), frame_list[i])
                             any = any_pb2.Any()
