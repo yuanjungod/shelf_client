@@ -157,9 +157,11 @@ class Camera(object):
                         logging.debug("init finish")
                 else:
                     logging.debug("#################begin#############")
-                    any = any_pb2.Any()
-                    any.Pack(device_gateway_pb2.MessageDoorOpened())
-                    self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
+
+                    if self._device.door_status.next():
+                        any = any_pb2.Any()
+                        any.Pack(device_gateway_pb2.MessageDoorOpened())
+                        self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any))
                     # time.sleep(1)
                     while self._device.door_status.next():
                         logging.debug("#################door status#############")
@@ -248,6 +250,7 @@ class Camera(object):
                             if not os.path.exists("images/%s" % datetime.date.today()):
                                 os.makedirs("images/%s" % datetime.date.today())
                             cv2.imwrite("images/%s/%s-%s.jpg" % (datetime.date.today(), photo_time, i), frame_list[i])
+                        logging.debug("%s close door image" % self.client_config["device_token"])
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageSenseData(
                             device_token=self.client_config["device_token"],
