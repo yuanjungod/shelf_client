@@ -102,6 +102,7 @@ class MessageController(object):
                                 json.dump(self.client_config, f)
                             if self._shelf.in_use is False and self._shelf.camera.working == 0:
                                 logging.debug("for : %s" % self.client_config["device_token"])
+                                self._shelf.in_use = True
                                 self._shelf.camera.push_frames_to_server(authorization_info)
 
                             # self._shelf.shelf_display([
