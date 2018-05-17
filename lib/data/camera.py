@@ -109,6 +109,7 @@ class Camera(object):
                 logging.debug("internal_frame_thread start %s" % request)
                 self.working = 1
                 if request == "shelf_init":
+                    logging.debug("take photo")
                     frame_list = list()
                     for frame in self.take_photos():
                         frame_list.append(frame)
