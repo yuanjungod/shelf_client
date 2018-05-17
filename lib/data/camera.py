@@ -35,6 +35,10 @@ class Camera(object):
         th.start()
         for frame in self.take_photos():
             pass
+        self.new1 = np.zeros(shape=(480 * 2, 640 * 2, 3))
+        self.new2 = np.zeros(shape=(480, 640 * 2, 3))
+        self.new3 = np.zeros(shape=(480, 640 * 2, 3))
+        self.new4 = np.zeros(shape=(480, 640 * 2, 3))
 
     def set_image_remote_save_url(self, image_remote_save_url):
         self._image_remote_save_url = image_remote_save_url
@@ -67,27 +71,24 @@ class Camera(object):
 
     def assemble_pic(self, frame_list):
         shape = frame_list[0].shape
-        new1 = np.zeros(shape=(shape[0] * 2, shape[1] * 2, 3))
+
         if len(frame_list) >= 4:
             for i in range(4):
-                new1[(i / 2)*shape[0]: (i / 2)*shape[0]+shape[0], (i % 2)*shape[1]: (i % 2)*shape[1]+shape[1]] = frame_list[i]
+                self.new1[(i / 2)*shape[0]: (i / 2)*shape[0]+shape[0], (i % 2)*shape[1]: (i % 2)*shape[1]+shape[1]] = frame_list[i]
 
-        new2 = np.zeros(shape=(shape[0], shape[1] * 2, 3))
         if len(frame_list) >= 6:
             for i in range(4, 6, 1):
-                new2[0: shape[0], (i-4) * shape[1]: (i-4) * shape[1] + shape[1]] = frame_list[i]
+                self.new2[0: shape[0], (i-4) * shape[1]: (i-4) * shape[1] + shape[1]] = frame_list[i]
 
-        new3 = np.zeros(shape=(shape[0], shape[1] * 2, 3))
         if len(frame_list) >= 8:
             for i in range(6, 8, 1):
-                new3[0: shape[0], (i - 6) * shape[1]: (i - 6) * shape[1] + shape[1]] = frame_list[i]
+                self.new3[0: shape[0], (i - 6) * shape[1]: (i - 6) * shape[1] + shape[1]] = frame_list[i]
 
-        new4 = np.zeros(shape=(shape[0], shape[1] * 2, 3))
         if len(frame_list) == 10:
             for i in range(8, 10, 1):
-                new4[0: shape[0], (i - 8) * shape[1]: (i - 8) * shape[1] + shape[1]] = frame_list[i]
+                self.new4[0: shape[0], (i - 8) * shape[1]: (i - 8) * shape[1] + shape[1]] = frame_list[i]
 
-        return [new1, new2, new3, new4]
+        return [self.new1, self.new2, self.new3, self.new4]
 
     def get_camera_status(self):
         status = True
