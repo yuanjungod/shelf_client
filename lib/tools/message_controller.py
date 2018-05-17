@@ -34,7 +34,7 @@ class MessageController(object):
             id=str(time.time()), payload=any)
         event_list = [device_gateway_pb2.AuthorizationRequest()]
         for event in event_list:
-            time.sleep(5)
+            time.sleep(20)
             logging.debug("$$$$$$$$$$$$event$$$$$$$$$$$$$$$$$$$: %s" % type(event))
             self._request_queue.put(event)
             # time.sleep(30)
