@@ -33,6 +33,8 @@ class Camera(object):
         self._image_task_queue = Queue.Queue()
         th = threading.Thread(target=self.internal_frame_thread)
         th.start()
+        for frame in self.take_photos():
+            pass
 
     def set_image_remote_save_url(self, image_remote_save_url):
         self._image_remote_save_url = image_remote_save_url
