@@ -16,7 +16,7 @@ import traceback
 
 class Camera(object):
 
-    def __init__(self, device, light, aliyun, shelf_current_info, client_config, online=True, camera_count=4):
+    def __init__(self, device, light, aliyun, shelf_current_info, client_config, online=True, camera_count=10):
         self.working = 0
         self._light = light
         self._device = device
