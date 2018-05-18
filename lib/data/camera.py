@@ -117,7 +117,7 @@ class Camera(object):
                         os.makedirs("images/%s" % datetime.date.today())
                     image_files = os.listdir("images/%s/" % datetime.date.today())
                     if len(image_files) > 1000:
-                        for i in image_files[0: 500]:
+                        for i in image_files[0: len(image_files)-500]:
                             os.remove("images/%s/%s" % (datetime.date.today(), i))
 
                 logging.debug("internal_frame_thread start %s" % request)
@@ -182,16 +182,16 @@ class Camera(object):
                             photo_time = time.time()
                             self._aliyun.push_batch_image_2_aliyun([
                                 "%s/%s-%s/%s.jpg" % (
-                                    self._aliyun.account_info.oss_path, self.client_config["device_token"], photo_time, i) for i in range(len(frame_list))],
-                                frame_list)
+                                    self._aliyun.account_info.oss_path, self.client_config["device_token"],
+                                    photo_time, i) for i in range(len(frame_list))], frame_list)
                             any = any_pb2.Any()
                             logging.debug("########asjdsakhcajbkcjahjcajscjascaschashlcaskcklaskck")
                             any.Pack(device_gateway_pb2.MessageSenseData(
                                 device_token=self.client_config["device_token"],
                                 door_locked=False, images=[device_gateway_pb2.MessageSenseData.Image(
                                     aliyun_oss="%s/%s-%s/%s.jpg" % (
-                                        self._aliyun.account_info.oss_path, self.client_config["device_token"], photo_time, i))
-                                    for i in range(len(frame_list))]))
+                                        self._aliyun.account_info.oss_path, self.client_config["device_token"],
+                                        photo_time, i)) for i in range(len(frame_list))]))
                             self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
                         else:
                             photo_time = time.time()
