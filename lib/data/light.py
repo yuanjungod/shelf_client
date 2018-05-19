@@ -31,12 +31,12 @@ class Light(object):
         close_func(fd, led_id)
 
     def open_all_light(self):
+        self.open_time = time.time()
         if self.is_open is False:
             self.open_light(1)
             self.open_light(3)
             self.open_light(2)
             self.is_open = True
-            self.open_time = time.time()
             time.sleep(1)
 
     def close_all_light(self):
