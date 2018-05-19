@@ -119,7 +119,7 @@ if __name__ == "__main__":
         except grpc.RpcError:
             print "except"
             logging.error(traceback.format_exc())
-            time.sleep(math.pow(2, count))
+            exit()
             count += 1
 
 
