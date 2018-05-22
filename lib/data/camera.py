@@ -39,6 +39,7 @@ class Camera(object):
         self.new2 = np.zeros(shape=(480, 640 * 2, 3))
         self.new3 = np.zeros(shape=(480, 640 * 2, 3))
         self.new4 = np.zeros(shape=(480, 640 * 2, 3))
+        self.new5 = np.zeros(shape=(480, 640 * 2, 3))
 
     def set_image_remote_save_url(self, image_remote_save_url):
         self._image_remote_save_url = image_remote_save_url
@@ -84,11 +85,18 @@ class Camera(object):
             for i in range(6, 8, 1):
                 self.new3[0: shape[0], (i - 6) * shape[1]: (i - 6) * shape[1] + shape[1]] = frame_list[i]
 
-        if len(frame_list) == 10:
+        if len(frame_list) >= 10:
             for i in range(8, 10, 1):
                 self.new4[0: shape[0], (i - 8) * shape[1]: (i - 8) * shape[1] + shape[1]] = frame_list[i]
 
-        return [self.new1, self.new2, self.new3, self.new4]
+        if len(frame_list) >= 12:
+            for i in range(10, 12, 1):
+                self.new5[0: shape[0], (i - 10) * shape[1]: (i - 10) * shape[1] + shape[1]] = frame_list[i]
+
+        if len(frame_list) >= 12:
+            return [self.new1, self.new2, self.new3, self.new4, self.new5]
+        else:
+            return [self.new1, self.new2, self.new3, self.new4]
 
     def get_camera_status(self):
         status = True
