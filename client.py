@@ -10,6 +10,7 @@ import logging.config
 import time
 import traceback
 import math
+import random
 from lib import device_gateway_pb2, device_gateway_pb2_grpc
 from lib.data.shelf import Shelf
 from lib.tools.message_controller import MessageController
@@ -42,6 +43,8 @@ class Client(object):
         cls.Port = port
 
     def init_channel(cls):
+        time.sleep(random.choice(range(20)))
+        logging.debug("init channel")
         cls.Channel = grpc.insecure_channel('%s:%s' % (cls.Host, cls.Port))
 
     def init(self):
