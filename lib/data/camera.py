@@ -141,16 +141,19 @@ class Camera(object):
                     logging.debug("take photo456")
                     if self.online:
                         self._aliyun.check_account()
+                        photo_time = time.time()
                         # print ["%s/test/%s.jpg" % ("123", i) for i in range(len(frame_list))]
                         logging.debug(self._aliyun.account_info.oss_path)
                         self._aliyun.push_batch_image_2_aliyun([
-                            "%s/test/%s.jpg" % (self._aliyun.account_info.oss_path, i) for i in range(len(frame_list))], frame_list)
+                            "%s/%s-%s/%s.jpg" % (self._aliyun.account_info.oss_path, datetime.date.today(),
+                                                 photo_time, i+5) for i in range(len(frame_list))], frame_list)
 
                         any = any_pb2.Any()
                         any.Pack(device_gateway_pb2.MessageSenseData(
                                     door_locked=True, images=[device_gateway_pb2.MessageSenseData.Image(
-                                        aliyun_oss="%s/test/%s.jpg" % (
-                                            self._aliyun.account_info.oss_path, i)) for i in range(len(frame_list))]))
+                                        aliyun_oss="%s/%s-%s/%s.jpg" % (
+                                            self._aliyun.account_info.oss_path, datetime.date.today(),
+                                            photo_time, i+5)) for i in range(len(frame_list))]))
                         sense_data = device_gateway_pb2.StreamMessage(id=str(time.time()), payload=any)
                         # logging.debug(sense_data)
                         self.return_cmd_queue.put(sense_data)
@@ -191,7 +194,7 @@ class Camera(object):
                             self._aliyun.push_batch_image_2_aliyun([
                                 "%s/%s-%s/%s.jpg" % (
                                     self._aliyun.account_info.oss_path, self.client_config["device_token"],
-                                    photo_time, i) for i in range(len(frame_list))], frame_list)
+                                    photo_time, i+5) for i in range(len(frame_list))], frame_list)
                             any = any_pb2.Any()
                             logging.debug("########asjdsakhcajbkcjahjcajscjascaschashlcaskcklaskck")
                             any.Pack(device_gateway_pb2.MessageSenseData(
@@ -199,7 +202,7 @@ class Camera(object):
                                 door_locked=False, images=[device_gateway_pb2.MessageSenseData.Image(
                                     aliyun_oss="%s/%s-%s/%s.jpg" % (
                                         self._aliyun.account_info.oss_path, self.client_config["device_token"],
-                                        photo_time, i)) for i in range(len(frame_list))]))
+                                        photo_time, i+5)) for i in range(len(frame_list))]))
                             self.return_cmd_queue.put(device_gateway_pb2.StreamMessage(payload=any))
                         else:
                             photo_time = time.time()
