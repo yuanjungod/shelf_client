@@ -111,7 +111,7 @@ if __name__ == "__main__":
     while True:
         count = 1
         try:
-            client = Client(False)
+            client = Client(True)
             # client.set_host("10.12.2.250", "10000")
             client.set_host("device.guoxiaomei.cn", "10000")
             # client.set_host("localhost", "10000")

@@ -3,7 +3,7 @@
 from video_tool import VideoTool
 import cv2
 import threading
-from device.proto.gateway import device_gateway_pb2
+from lib import device_gateway_pb2
 import time
 
 import oss2

@@ -1,8 +1,8 @@
 import Queue
 import time
 import threading
-from device.proto.gateway  import device_gateway_pb2_grpc
-from device.proto.gateway  import device_gateway_pb2
+from lib import device_gateway_pb2_grpc
+from lib import device_gateway_pb2
 from lib import any_pb2
 import logging
 import json
