@@ -5,7 +5,7 @@ chmod 666 /dev/parport0
 chmod 666 /dev/ttyS0
 pid=`ps -ef | grep "sudo nohup python client.py" | grep -v "grep" | awk -F \  {'print $2'}`
 if [ "$pid" = "" ] ; then
-/usr/bin/python /home/gxm/code/shelf_client/cron_test.py
+nohup /usr/bin/python /home/gxm/code/shelf_client/cron_test.py &
 echo "running" >> /home/gxm/code/shelf_client/test.tex
 # rm -rf *.log
 fi
