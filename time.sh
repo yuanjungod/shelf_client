@@ -6,7 +6,7 @@ chmod 666 /dev/parport0
 chmod 666 /dev/ttyS0
 pid=`ps -ef | grep "/home/gxm/code/shelf_client/env/bin/python /home/gxm/code/shelf_client" | grep -v "grep" | awk -F \  {'print $2'}`
 if [ "$pid" = "" ] ; then
-nohup /home/gxm/code/shelf_client/env/bin/python /home/gxm/code/shelf_client/cron_test.py &
+nohup /home/gxm/code/shelf_client/env/bin/python /home/gxm/code/shelf_client/client.py &
 echo "running" >> /home/gxm/code/shelf_client/test.tex
 # rm -rf *.log
 fi

@@ -10,7 +10,7 @@ class Light(object):
         self.is_open = False
         self.open_time = -1
         self.close_time = -1
-        self.lib = ctypes.cdll.LoadLibrary("./libled.so")
+        self.lib = ctypes.cdll.LoadLibrary("/home/gxm/code/shelf_client/libled.so")
         self.func = self.lib.LED_Board_init
         self.func.restype = c_int
         # self.open_fd_list = [self.func() for i in range(3)]
