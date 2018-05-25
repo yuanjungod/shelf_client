@@ -1,5 +1,7 @@
 #!/bin/sh
 cd /home/gxm/code/shelf_client
+cp -rf /home/gxm/code/shelf_client/lib /home/gxm/code/shelf_client/env/lib/python2.7/site-packages/
+cp -rf /home/gxm/code/shelf_client/device /home/gxm/code/shelf_client/env/lib/python2.7/site-packages/
 echo "fucking start" >> /home/gxm/code/shelf_client/test.tex
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
 chmod 666 /dev/parport0
