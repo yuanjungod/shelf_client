@@ -1,4 +1,5 @@
 #!/bin/sh
+cd /home/gxm/code/shelf_client
 echo "fucking start" >> /home/gxm/code/shelf_client/test.tex
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
 chmod 666 /dev/parport0
