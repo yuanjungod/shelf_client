@@ -33,7 +33,7 @@ class Client(object):
         self.online = online
         logging.basicConfig(
             level=logging.DEBUG,
-            filename='debug.log',
+            filename='/home/gxm/code/shelf_client/debug.log',
             format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S', filemode='a')
 
