@@ -7,7 +7,7 @@ import logging
 class Device(object):
     def __init__(self):
         self.is_open = False
-        self.lib = ctypes.cdll.LoadLibrary("./liblock.so")
+        self.lib = ctypes.cdll.LoadLibrary("/home/gxm/code/shelf_client/liblock.so")
         self.func = self.lib.lock_init
         self.func.restype = c_int
         logging.debug("lock init ret:")

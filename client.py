@@ -9,6 +9,7 @@ import logging
 import logging.config
 import time
 import traceback
+import random
 import math
 from lib import device_gateway_pb2, device_gateway_pb2_grpc
 from lib.data.shelf import Shelf
@@ -33,7 +34,7 @@ class Client(object):
         self.online = online
         logging.basicConfig(
             level=logging.DEBUG,
-            filename='debug.log',
+            filename='/home/gxm/code/shelf_client/debug.log',
             format='[%(asctime)s] %(levelname)s [%(funcName)s: %(filename)s, %(lineno)d] %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S', filemode='a')
 
@@ -42,6 +43,9 @@ class Client(object):
         cls.Port = port
 
     def init_channel(cls):
+        logging.info("init channel sleeping start")
+        time.sleep(random.choice([range(30)]))
+        logging.info("init channel sleeping end")
         cls.Channel = grpc.insecure_channel('%s:%s' % (cls.Host, cls.Port))
 
     def init(self):
@@ -112,9 +116,7 @@ if __name__ == "__main__":
         count = 1
         try:
             client = Client(True)
-            # client.set_host("10.12.2.250", "10000")
             client.set_host("device.guoxiaomei.cn", "10000")
-            # client.set_host("localhost", "10000")
             client.run()
         except grpc.RpcError:
             print "except"
