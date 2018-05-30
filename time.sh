@@ -31,7 +31,7 @@ echo "client start" >> /home/gxm/code/shelf_client/test.tex
 pid=`ps -ef | grep "/home/gxm/code/shelf_client/env/bin/python /home/gxm/code/shelf_client" | grep -v "grep" | awk -F \  {'print $2'}`
 if [ "$pid" = "" ] ; then
 cp -rf /home/gxm/code/shelf_client/lib /home/gxm/code/shelf_client/env/lib/python2.7/site-packages/
-cp -rf /home/gxm/code/shelf_client/device /home/gxm/code/shelf_client/env/lib/python2.7/site-packages/
+cp -rf /home/gxm/code/shelf_client/device_back /home/gxm/code/shelf_client/env/lib/python2.7/site-packages/device
 nohup /home/gxm/code/shelf_client/env/bin/python /home/gxm/code/shelf_client/client.py &
 echo "client running" >> /home/gxm/code/shelf_client/test.tex
 # rm -rf *.log
